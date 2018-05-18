@@ -1,0 +1,23 @@
+{
+  "object":"page",
+  "entry":
+    [{
+      "id":"320753758271687",
+      "time":1471957860368,
+      "messaging":
+        [{
+          "sender":{
+            "id":"USER_ID"
+          },
+          "recipient":{
+            "id":"PAGE_ID"
+          },
+          "timestamp":1471957860318,
+          "message":{
+            "mid":"mid.1471957860205:70331a194f8c8af354",
+            "seq":24,
+            "text":"Mensagem"
+          }
+        }]
+    }]
+}
