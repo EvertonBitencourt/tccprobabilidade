@@ -79,7 +79,7 @@ function dialogo($id, $mensagem){
 
     debug($consulta_etapa);
     if(strcasecmp ($mensagem,"sim") ==0){
-        $resposta ="Qual é a categoria?";
+        $resposta ="Qual é a categoria?"; // mensagem de teste
     }
     if($mensagem == "não"){}
 
