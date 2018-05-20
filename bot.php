@@ -80,7 +80,7 @@ function dialogo($id, $mensagem){
     /*foreach ($consulta_etapa as $value){
             $etapa = $value;
         }*/
-    debug($etapa);
+    debug("FEIO FEIO FEIO");
 
     if(strcasecmp ($mensagem,"sim") == 0){
         $resposta ="Qual é a categoria?"; //teste
