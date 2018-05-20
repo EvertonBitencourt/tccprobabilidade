@@ -74,6 +74,7 @@ function dialogo($id, $mensagem){
 
     $resposta = "em desenvolvimento";
     $db = abrir_banco();
+    $etapa = -1;
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetchAll();
     foreach ($consulta_etapa as $value){
             $etapa = $value;
