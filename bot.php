@@ -73,12 +73,14 @@ function verificarCategoria($texto){
 function dialogo($id, $mensagem){
 
     $resposta = "em desenvolvimento";
-
     $db = abrir_banco();
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetchAll();
+    foreach ($consulta_etapa as $value){
+            $etapa = $value;
+        }
+    debug($etapa);
 
-    debug($consulta_etapa);
-    if(strcasecmp ($mensagem,"sim") ==0){
+    if(strcasecmp ($mensagem,"sim") == 0){
         $resposta ="Qual é a categoria?"; //teste
     }
     if($mensagem == "não"){}
