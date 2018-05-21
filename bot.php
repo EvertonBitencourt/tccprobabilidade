@@ -122,13 +122,13 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 3.2){
-        $consulta = $db->query("select mensagem from historico where id_usuario=$id order by data_hora")->fetch();
+        $consulta = $db->query("select mensagem from historico where id_usuario=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
         $valor = $consulta[count($consulta)-2];
         debug($valor." ".$valor["mensagem"]);
         if(ctexto($mensagem,"não",1)){
-            $resposta= calcular_espaco_amostral($valor["mensagem"],6, false);
+            $resposta= calcular_espaco_amostral($valor,6, false);
         }else{
-            $resposta=  calcular_espaco_amostral($valor["mensagem"],6, true);
+            $resposta=  calcular_espaco_amostral($valor,6, true);
         }
         $resposta = $resposta."\n Deseja resolver outro problema?";
         atualizar_etapa($id, 4);
@@ -136,7 +136,7 @@ function dialogo($id, $mensagem){
     if($etapa == 4){
         if(ctexto($mensagem, "sim", 1)){
                 atualizar_etapa($id, 1);
-                $resposta ="Qual é a categoria?";
+                $resposta ="Você sabe qual é a categoria?";
             }
         if(ctexto($mensagem, "não", 1)){
             atualizar_etapa($id, 5);
@@ -145,7 +145,7 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 5){
         atualizar_etapa($id,1);
-        $resposta = "Vejá quem voltou?!?!, Só me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
+        $resposta = "Veja só quem voltou?!?!\n Só me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
     }
 
    /* if($mensagem == verificarCategoria($mensagem)) {
