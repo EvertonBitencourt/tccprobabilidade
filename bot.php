@@ -70,6 +70,7 @@ function verificarCategoria($texto){
     $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll();
     $cat_lev = "sem categoria";
     foreach ($categoria as $value){
+        debug($value);
         if(ctexto($texto, $value, 2)){
             $cat_lev = $value;
         }
