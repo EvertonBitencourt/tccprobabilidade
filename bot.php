@@ -67,7 +67,7 @@ function ctexto($mensagem, $termo, $margem){ // comparar textos
 
 function verificarCategoria($texto){
     $db = abrir_banco();
-    $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll();
+    $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll(PDO::FETCH_ASSOC);
     $cat_lev = "sem categoria";
     foreach ($categoria as $value){
         debug($value);
