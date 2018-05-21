@@ -80,11 +80,11 @@ function verificarCategoria($texto){
 
 function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
     if($detalhado){
-        $explicacao = "Espaço amostral é o conjunto estabelecido por todos os possíveis resultados de um experimento. Logo devemos elevar a quantidade de lançamentos (";
-        $explicacao = $explicacao.$lancamentos.") à quantidade de faces (".$faces."). Portanto o resultado é: ".pow($lancamentos,$faces);
+        $explicacao = "Espaço amostral é o conjunto estabelecido por todos os possíveis resultados de um experimento. Logo devemos elevar a quantidade de possibilidades (";
+        $explicacao = $explicacao.$faces.") à quantidade de lançamentos (".$lancamentos."). Portanto o resultado é: ".pow($faces,$lancamentos);
         return $explicacao;
     }else
-    return pow($lancamentos,$faces);
+    return pow($faces,$lancamentos);
 }
 function dialogo($id, $mensagem){
 
@@ -94,11 +94,11 @@ function dialogo($id, $mensagem){
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
     $etapa = $consulta_etapa[0];
     if($etapa == 1){
-        if(ctexto($mensagem,"sim", 1)){
+        if(ctexto($mensagem,"sim", 2)){
             atualizar_etapa($id, 2);
             $resposta ="Qual é a categoria?"; //teste
         }
-        if(ctexto($mensagem,"não", 1)){
+        if(ctexto($mensagem,"não", 2)){
             $resposta ="Veja o material que seu professor compartilhou com você em sala de aula ou consulte: https://brasilescola.uol.com.br/matematica/probabilidade.htm \n Após a consulta informe a categoria de seu problema entre as categorias abaixo: \n Espaço Amostral \n Arranjos e Permutações"; //teste
             atualizar_etapa($id, 2);
         }
@@ -110,7 +110,7 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 3){
-        if(ctexto($mensagem,"dado", 1)){//atualizar diagram de fluxo de dados com esse item
+        if(ctexto($mensagem,"dado", 2)){//atualizar diagram de fluxo de dados com esse item
             $resposta = "Quantas vezes você irá lançar este objeto";
             atualizar_etapa($id, 3.1);
         }
@@ -124,8 +124,8 @@ function dialogo($id, $mensagem){
     if($etapa == 3.2){
         $consulta = $db->query("select mensagem from historico where id_usuario=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
         $valor = $consulta[count($consulta)-2];
-        
-        if(ctexto($mensagem,"não",1)){
+
+        if(ctexto($mensagem,"não",2)){
             $resposta= calcular_espaco_amostral($valor["mensagem"],6, false);
         }else{
             $resposta=  calcular_espaco_amostral($valor["mensagem"],6, true);
@@ -134,11 +134,11 @@ function dialogo($id, $mensagem){
         atualizar_etapa($id, 4);
     }
     if($etapa == 4){
-        if(ctexto($mensagem, "sim", 1)){
+        if(ctexto($mensagem, "sim", 2)){
                 atualizar_etapa($id, 1);
                 $resposta ="Você sabe qual é a categoria?";
             }
-        if(ctexto($mensagem, "não", 1)){
+        if(ctexto($mensagem, "não", 2)){
             atualizar_etapa($id, 5);
             $resposta = "Vá conversar com a siri então.";
         }
