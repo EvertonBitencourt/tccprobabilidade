@@ -133,7 +133,7 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 4){
         if(ctexto($mensagem, "sim", 1)){
-                atualizar_etapa($id, 0);
+                atualizar_etapa($id, 1);
                 $resposta ="Qual é a categoria?";
             }
         if(ctexto($mensagem, "não", 1)){
@@ -142,7 +142,7 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 5){
-        atualizar_etapa($id,0);
+        atualizar_etapa($id,1);
         $resposta = "Vejá quem voltou?!?!, Só me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
     }
 
