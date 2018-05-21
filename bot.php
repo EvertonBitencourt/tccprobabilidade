@@ -124,11 +124,11 @@ function dialogo($id, $mensagem){
     if($etapa == 3.2){
         $consulta = $db->query("select mensagem from historico where id_usuario=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
         $valor = $consulta[count($consulta)-2];
-        debug($valor." ".$valor["mensagem"]);
+        
         if(ctexto($mensagem,"não",1)){
-            $resposta= calcular_espaco_amostral($valor,6, false);
+            $resposta= calcular_espaco_amostral($valor["mensagem"],6, false);
         }else{
-            $resposta=  calcular_espaco_amostral($valor,6, true);
+            $resposta=  calcular_espaco_amostral($valor["mensagem"],6, true);
         }
         $resposta = $resposta."\n Deseja resolver outro problema?";
         atualizar_etapa($id, 4);
