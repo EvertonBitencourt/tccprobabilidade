@@ -67,7 +67,7 @@ function ctexto($mensagem, $termo, $margem){ // comparar textos
 
 function verificarCategoria($texto){
     $db = abrir_banco();
-    $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll();
+    $categoria = $db->query("SELECT nome FROM categoria") ->fetch();
     $cat_lev = "sem categoria";
     foreach ($categoria as $value){
         debug($value);
@@ -122,7 +122,7 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 3.2){
-        $consulta = $db->query("select mensagem from historico where id_usuario=$id order by data_hora")->fetchAll();
+        $consulta = $db->query("select mensagem from historico where id_usuario=$id order by data_hora")->fetch();
         $valor = $consulta[count($consulta)-2];
         if(ctexto($mensagem,"não",1)){
             $resposta= calcular_espaco_amostral($valor,6, false);
