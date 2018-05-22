@@ -108,7 +108,7 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 2){
-        if(ctexto(verificarCategoria($mensagem),"Espaço Amostral",3)){
+        if(ctexto(verificarCategoria($mensagem),"espaco amostral",3)){
             $resposta = "Para lhe ajudar melhor preciso saber algumas informações de seu problema, favor responda claramente os próximos questionamentos. Qual objeto está usando?";
             atualizar_etapa($id, 3);
         }

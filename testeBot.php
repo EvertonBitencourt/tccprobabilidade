@@ -26,7 +26,7 @@ $mensagem = '{
           "message":{
             "mid":"mid.1471957860205:70331a194f8c8af354",
             "seq":24,
-            "text":"' . $_GET['mensagem'].  '"
+            "text":"' .$_GET['mensagem'].  '"
           }
         }]
     }]
