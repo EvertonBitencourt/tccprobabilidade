@@ -11,12 +11,10 @@ function processMessage($message) {
     $results = print_r($message, true);
     file_put_contents("log.txt", $results . PHP_EOL, FILE_APPEND);
     $sender = $message['sender']['id'];
+    $recipient = $message['recipient']['id'];
     $text = $message['message']['text'];//texto recebido na mensagem
     if (isset($text)) {
-
-        //abrir_banco()->query("INSERT INTO historico (id_usuario, mensagem) VALUES ($sender, '$text')");
-        salvar_mensagem($sender, $text);
-
+        salvar_mensagem($sender, $text, $recipient);
 
         if($sender!=305572973182638) {
             $caso = verificar_usuario_bd($sender);
@@ -36,9 +34,9 @@ function processMessage($message) {
                 // usar para consultar select to_char(data_hora, 'dd/mm/yyyy hh24:mi') from historico;
             }
         }
-    }else{
-        sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Ainda não reconheço imagens.')));
-    }
+    }/*else{
+     /*   sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Ainda não reconheço imagens.')));
+    }*/
 }
 
 function abrir_banco(){
@@ -148,9 +146,9 @@ function dialogo($id, $mensagem){
     return $resposta;
 }
 
-function salvar_mensagem($id, $mensagem){
+function salvar_mensagem($idorigem, $mensagem, $idest){
     $db = abrir_banco();
-    $db->query("INSERT INTO historico (id_usuario, mensagem, data_hora) VALUES ($id, '$mensagem', current_timestamp )");
+    $db->query("INSERT INTO historico (id_origem, mensagem, data_hora, id_destino) VALUES ($idorigem, '$mensagem', current_timestamp, $idest )");
 
 }
 
