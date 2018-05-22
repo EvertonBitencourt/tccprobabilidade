@@ -51,7 +51,7 @@ function ctexto($mensagem, $termo, $margem){ // comparar textos
     $mensagem = strtolower($mensagem);
     $termo = strtolower($termo);
     $comp = levenshtein($mensagem,$termo);
-    if($comp<=margem) {
+    if($comp<=$margem) {
         return true;
     }else
         return false;
@@ -68,6 +68,18 @@ function verificarCategoria($texto){
     }
     debug($cat_lev);
     return $cat_lev;
+}
+
+function verificarObjeto($message){ // implementar no dialogo a troca do if por este método
+    $db = abrir_banco();
+    $objeto = $db->query("SELECT nome FROM objeto") ->fetchAll(PDO::FETCH_ASSOC);
+    $ob = "vazio";
+    foreach ($objeto as $value){
+        if(ctexto($message,$value, 3)){
+            $ob = $value;
+        }
+    }
+    return $ob;
 }
 
 function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
@@ -96,13 +108,13 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 2){
-        if(ctexto(verificarCategoria($mensagem),"Espaco Amostral",3)){
+        if(ctexto(verificarCategoria($mensagem),"Espaço Amostral",3)){
             $resposta = "Para lhe ajudar melhor preciso saber algumas informações de seu problema, favor responda claramente os próximos questionamentos. Qual objeto está usando?";
             atualizar_etapa($id, 3);
         }
     }
     if($etapa == 3){
-        if(ctexto($mensagem,"dado", 2)){//atualizar diagram de fluxo de dados com esse item
+        if(ctexto(verificarObjeto($mensagem),"Dado", 2)){//atualizar diagram de fluxo de dados com esse item
             $resposta = "Quantas vezes você irá lançar este objeto";
             atualizar_etapa($id, 3.1);
         }
@@ -174,14 +186,6 @@ function atualizar_etapa($id, $etapa){
     $db = abrir_banco();
     $db ->query("UPDATE usuario SET etapa = $etapa where id_usuario = $id");
 
-}
-
-function verificarObjeto($message){
-    $consulta = $db->query("SELECT * FROM "); //teste de bosta
-    /*$text = $message['message']['text'];
-    if(in_array($text, $os)){
-      sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Então, já sei o objeto que vamos trabalhar, quantas faces ou lado ele tem?')));
-    }*/
 }
 
 function debug($mensagem){
