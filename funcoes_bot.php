@@ -64,9 +64,10 @@ function verificarCategoria($texto){
     foreach ($categoria as $value){
         if(ctexto($texto, $value, 2)){
             $cat_lev = $value;
+            debug($value);
         }
     }
-    debug($cat_lev);
+    //debug($cat_lev);
     return $cat_lev;
 }
 
