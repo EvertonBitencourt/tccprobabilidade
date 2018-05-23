@@ -62,8 +62,8 @@ function verificarCategoria($texto){
     $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll(PDO::FETCH_ASSOC);
     $cat_lev = "sem categoria";
     foreach ($categoria as $value){
-        if(ctexto($texto, $value, 2)){
-            $cat_lev = $value;
+        if(ctexto($texto, $value["nome"], 2)){
+            $cat_lev = $value["nome"];
             debug($value);
         }
     }
