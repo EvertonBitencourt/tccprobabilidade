@@ -75,9 +75,9 @@ function verificarObjeto($message){ // implementar no dialogo a troca do if por 
     $db = abrir_banco();
     $objeto = $db->query("SELECT nome FROM objeto") ->fetchAll(PDO::FETCH_ASSOC);
     $ob = "vazio";
-    foreach ($objeto as $value["nome"]){
+    foreach ($objeto as $value){
         if(ctexto($message,$value["nome"], 3)){
-            $ob = $value;
+            $ob = $value["nome"];
         }
     }
     return $ob;
