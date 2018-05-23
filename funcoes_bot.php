@@ -132,7 +132,7 @@ function dialogo($id, $mensagem){
         $consulta = $db->query("select mensagem from historico where id_origem=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
         $lancamentos = $consulta[count($consulta)-2]["mensagem"];
         $objeto = verificarObjeto($consulta[count($consulta)-3]["mensagem"]);
-        $consulta = $db->query("select faces from objeto where nome=$objeto")->fetchAll(PDO::FETCH_ASSOC);
+        $consulta = $db->query("select faces from objeto where nome='$objeto'")->fetchAll(PDO::FETCH_ASSOC);
         $faces = $consulta[0]["faces"];
         if(ctexto($mensagem,"não",2)){
             $resposta= calcular_espaco_amostral($lancamentos, $faces, false);
