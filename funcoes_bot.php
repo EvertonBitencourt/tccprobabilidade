@@ -14,7 +14,7 @@ function processMessage($message) {
     $recipient = $message['recipient']['id'];
     $text = $message['message']['text'];//texto recebido na mensagem
     if (isset($text)) {
-        salvar_mensagem($sender, $text, $recipient);
+        salvar_mensagem($sender, nl2br($text), $recipient);
 
         if($sender!=305572973182638) {
             $caso = verificar_usuario_bd($sender);
@@ -45,6 +45,10 @@ function abrir_banco(){
         'd8ji7jlpf7b7rq', //banco
         'ec2-50-16-204-127.compute-1.amazonaws.com'//servidor
     );
+}
+
+function consulta_msg($id){
+
 }
 
 function ctexto($mensagem, $termo, $margem){ // comparar textos
@@ -154,7 +158,7 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 5){
         atualizar_etapa($id,1);
-        $resposta = "Veja só quem voltou?!?!\n Só me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
+        $resposta = "Veja só quem voltou?!?!\nSó me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
     }
 
     /* if($mensagem == verificarCategoria($mensagem)) {
