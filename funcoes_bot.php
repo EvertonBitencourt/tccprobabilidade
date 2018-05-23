@@ -51,6 +51,7 @@ function ctexto($mensagem, $termo, $margem){ // comparar textos
     $mensagem = strtolower($mensagem);
     $termo = strtolower($termo);
     $comp = levenshtein($mensagem,$termo);
+    $margem = $margem + 1;
     if($comp<=$margem) {
         return true;
     }else
@@ -62,7 +63,7 @@ function verificarCategoria($texto){
     $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll(PDO::FETCH_ASSOC);
     $cat_lev = "sem categoria";
     foreach ($categoria as $value){
-        if(ctexto($texto, $value["nome"], 2)){
+        if(ctexto($texto, $value["nome"], 3)){
             $cat_lev = $value["nome"];
             debug($value);
         }
@@ -115,8 +116,9 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 3){
-        if(ctexto(verificarObjeto($mensagem),"Dado", 2)){//atualizar diagram de fluxo de dados com esse item
-            $resposta = "Quantas vezes você irá lançar este objeto";
+        $objeto = verificarObjeto($mensagem);
+        if(!ctexto($objeto,"vazio", 1)){//atualizar diagram de fluxo de dados com esse item
+            $resposta = "Quantas vezes você irá lançar o(a) ".$objeto;
             atualizar_etapa($id, 3.1);
         }
     }
@@ -128,12 +130,14 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 3.2){
         $consulta = $db->query("select mensagem from historico where id_origem=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
-        $valor = $consulta[count($consulta)-2];
-
+        $lancamentos = $consulta[count($consulta)-2]["mensagem"];
+        $objeto = verificarObjeto($consulta[count($consulta)-3]["mensagem"]);
+        $consulta = $db->query("select faces from objeto where nome=$objeto")->fetchAll(PDO::FETCH_ASSOC);
+        $faces = $consulta[0]["faces"];
         if(ctexto($mensagem,"não",2)){
-            $resposta= calcular_espaco_amostral($valor["mensagem"],6, false);
+            $resposta= calcular_espaco_amostral($lancamentos, $faces, false);
         }else{
-            $resposta=  calcular_espaco_amostral($valor["mensagem"],6, true);
+            $resposta=  calcular_espaco_amostral($lancamentos,$faces, true);
         }
         $resposta = $resposta."\n Deseja resolver outro problema?";
         atualizar_etapa($id, 4);
