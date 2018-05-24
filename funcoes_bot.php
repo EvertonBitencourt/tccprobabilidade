@@ -93,7 +93,7 @@ function verificarObjeto($message,$id_usuario){ // implementar no dialogo a troc
     $db = abrir_banco();
     $objeto = $db->query("SELECT * FROM objeto") ->fetchAll(PDO::FETCH_ASSOC);
     $id = ultimoproblema($id_usuario);
-    $ob = 0;
+    $ob = false;
     foreach ($objeto as $value){
         if(ctexto($message,$value["nome"], 3)){
             $ob = $value["id_objeto"];
@@ -171,7 +171,7 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 3){
         $objeto = verificarObjeto($mensagem,$id);
-        if($objeto != 0){//atualizar diagram de fluxo de dados com esse item
+        if($objeto != false){//atualizar diagram de fluxo de dados com esse item
             $resposta = "Quantas vezes você irá lançar o(a) ".$objeto;
             atualizar_etapa($id, 3.1);
         }
