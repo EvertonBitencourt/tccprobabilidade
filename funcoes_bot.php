@@ -123,7 +123,7 @@ function resolver($id_usuario, $detalhado){
     }
     if($categoria_problema == 3){
         $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
-        $solucao = calcular_probabilidade($dado2, $faces, $detalhado);
+        $solucao = calcular_probabilidade($dado2, $faces, $dado3, $detalhado);
     }
     return $solucao;
 }
@@ -137,13 +137,19 @@ function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
         return pow($faces,$lancamentos);
 }
 
-function calcular_probabilidade($lancamento, $faces, $detalhado){
+function calcular_probabilidade($lancamento, $faces, $eventos, $detalhado){
     $espaco = pow($faces, $lancamento);//2^2= 4
-    $probabilidade = round(100/$espaco,2)." %";
+    $espaco_eventos = pow($eventos,$lancamento);
+    $probabilidade = round(100/$espaco*$espaco_eventos,2)." %";
     if($detalhado){
         $probabilidade = "A Probabilidade é calculada da seguinte forma(Completar a forma), portanto o resultado é:".$probabilidade;
     }
     return $probabilidade;
+}
+
+function obter_categoria($id_problema){
+    $db = abrir_banco();
+    return $db->query("select id_categoria from problema where id_problema = $id_problema")->fetch()["id_categoria"];
 }
 
 function dialogo($id, $mensagem){
@@ -174,13 +180,32 @@ function dialogo($id, $mensagem){
         $objeto = verificarObjeto($mensagem,$id);
         if($objeto != false){//atualizar diagram de fluxo de dados com esse item
             $resposta = "Quantas vezes você irá lançar o(a) ".$objeto;
+            if(obter_categoria(ultimoproblema($id)) == 3) atualizar_etapa($id,3.05);
+            else atualizar_etapa($id, 3.1);
+        }
+    }
+    if($etapa == 3.05){
+        if($mensagem >0){
+            $problema = ultimoproblema($id);
+            $db->query("update problema set dado2=$mensagem where id_problema = $problema");
+            $resposta = "Deseja obter a probabilidade de quantos eventos?";
             atualizar_etapa($id, 3.1);
         }
     }
     if($etapa == 3.1){
         if($mensagem >0){
             $problema = ultimoproblema($id);
-            $db->query("update problema set dado2=$mensagem where id_problema = $problema");
+            if(obter_categoria($problema) == 2){
+                $db->query("update problema set dado2=$mensagem where id_problema = $problema");
+            }
+            if(obter_categoria($problema) == 3){
+                $faces = $db ->query("select dado1 from problema where id_problema = $problema") ->fetch()["dado1"];
+                $faces = $db ->query("select faces from objeto where id_objeto = $faces") ->fetch()["faces"];
+                if($faces < $mensagem){
+                    $mensagem = $faces;
+                }
+                $db->query("update problema set dado3=$mensagem where id_problema = $problema");
+            }
             $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
             atualizar_etapa($id, 3.2);
         }
