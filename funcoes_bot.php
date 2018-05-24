@@ -122,7 +122,8 @@ function resolver($id_usuario, $detalhado){
         $solucao = calcular_espaco_amostral($dado2, $faces, $detalhado);
     }
     if($categoria_problema == 3){
-
+        $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
+        $solucao = calcular_probabilidade($dado2, $faces, $detalhado);
     }
     return $solucao;
 }
