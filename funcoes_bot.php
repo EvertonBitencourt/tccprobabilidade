@@ -14,7 +14,7 @@ function processMessage($message) {
     $recipient = $message['recipient']['id'];
     $text = $message['message']['text'];//texto recebido na mensagem
     if (isset($text)) {
-        salvar_mensagem($sender, nl2br($text), $recipient);
+        salvar_mensagem($sender, $text, $recipient);
 
         if($sender!=305572973182638) {
             $caso = verificar_usuario_bd($sender);
@@ -28,6 +28,7 @@ function processMessage($message) {
             }
             if ($caso == 3) {
                 $resposta = dialogo($sender, $text);
+                //sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' =>consulta_msg(1406614996122042,20))));
                 sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' =>$resposta)));
                 //verificarCategoria($text);
 
@@ -46,46 +47,83 @@ function abrir_banco(){
         'ec2-50-16-204-127.compute-1.amazonaws.com'//servidor
     );
 }
-
-function consulta_msg($id){
-
-}
+/*
+function consulta_msg($id, $quantidade){
+    $db = abrir_banco();
+    $msg = $db->query("SELECT * FROM historico WHERE id_origem = $id OR id_destino = $id ORDER BY data_hora DESC;")->fetchAll(PDO::FETCH_ASSOC);
+    $usuario = $db->query("SELECT nome FROM usuario WHERE id_usuario = $id")->fetchAll(PDO::FETCH_ASSOC);
+    $usuario = "everton";
+    $retorno = "";
+    foreach($msg as $line){
+        $retorno = $retorno.$line["data_hora"]." - ".$usuario.": ".$line["mensagem"]."\n";
+    }
+    return $retorno;
+}*/
 
 function ctexto($mensagem, $termo, $margem){ // comparar textos
     $mensagem = strtolower($mensagem);
     $termo = strtolower($termo);
     $comp = levenshtein($mensagem,$termo);
-    $margem = $margem + 1;
+    $margem = $margem;
     if($comp<=$margem) {
         return true;
     }else
         return false;
 }
 
-function verificarCategoria($texto){
+function verificarCategoria($texto,$idusuario){
     $db = abrir_banco();
-    $categoria = $db->query("SELECT nome FROM categoria") ->fetchAll(PDO::FETCH_ASSOC);
-    $cat_lev = "sem categoria";
+    $categoria = $db->query("SELECT * FROM categoria") ->fetchAll(PDO::FETCH_ASSOC);
+    $cat_lev = 0;
     foreach ($categoria as $value){
         if(ctexto($texto, $value["nome"], 3)){
-            $cat_lev = $value["nome"];
-            debug($value);
+            $cat_lev = $value["id_categoria"];
+            $db->query("insert into problema (id_usuario,id_categoria, data_hora) values ($idusuario,$cat_lev,current_timestamp)");
         }
     }
-    //debug($cat_lev);
     return $cat_lev;
 }
-
-function verificarObjeto($message){ // implementar no dialogo a troca do if por este método
+function ultimoproblema($id_usuario){
     $db = abrir_banco();
-    $objeto = $db->query("SELECT nome FROM objeto") ->fetchAll(PDO::FETCH_ASSOC);
-    $ob = "vazio";
+    $id = $db->query("SELECT id_problema FROM problema where id_usuario=$id_usuario order by data_hora desc")->fetchAll(PDO::FETCH_ASSOC);
+    return $id[0]["id_problema"]; //$id[0]=>["id_problema"]
+}
+
+function verificarObjeto($message,$id_usuario){ // implementar no dialogo a troca do if por este método
+    $db = abrir_banco();
+    $objeto = $db->query("SELECT * FROM objeto") ->fetchAll(PDO::FETCH_ASSOC);
+    $id = ultimoproblema($id_usuario);
+    $ob = 0;
     foreach ($objeto as $value){
         if(ctexto($message,$value["nome"], 3)){
+            $ob = $value["id_objeto"];
             $ob = $value["nome"];
+            $db->query("update problema set dado1=$ob where id_problema = $id");
         }
     }
     return $ob;
+}
+
+function resolver($id_usuario, $detalhado){
+    $db = abrir_banco();
+    $id_problema = ultimoproblema($id_usuario);
+    $problema = $db->query("SELECT * FROM problema where id_problema = $id_problema")->fetch();
+    $dado1 = $problema["dado1"];
+    $dado2 = $problema["dado2"];
+    $dado3 = $problema["dado3"];
+    $dado4 = $problema["dado4"];
+    $categoria_problema = $problema["id_categoria"];
+    if($categoria_problema == 1){
+
+    }
+    if($categoria_problema == 2){
+        $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
+        $solucao = calcular_espaco_amostral($dado2, $faces, $detalhado);
+    }
+    if($categoria_problema == 3){
+
+    }
+    return $solucao;
 }
 
 function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
@@ -96,6 +134,16 @@ function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
     }else
         return pow($faces,$lancamentos);
 }
+
+function calcular_probabilidade($lancamento, $faces, $detalhado){
+    $espaco = pow($faces, $lancamento);//2^2= 4
+    $probabilidade = round(100/$espaco,2)." %";
+    if($detalhado){
+        $probabilidade = "A Probabilidade é calculada da seguinte forma(Completar a forma), portanto o resultado é:".$probabilidade;
+    }
+    return $probabilidade;
+}
+
 function dialogo($id, $mensagem){
 
     $resposta = "não entendi sua mensagem, por favor digite novamente, verificando sua ortografia, eu sou sensivel :( ";
@@ -114,37 +162,38 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 2){
-        if(ctexto(verificarCategoria($mensagem),"espaco amostral",3)){
+        $categoria = verificarCategoria($mensagem,$id);
+        if($categoria == 2 || $categoria == 3){
             $resposta = "Para lhe ajudar melhor preciso saber algumas informações de seu problema, favor responda claramente os próximos questionamentos. Qual objeto está usando?";
             atualizar_etapa($id, 3);
         }
     }
     if($etapa == 3){
-        $objeto = verificarObjeto($mensagem);
-        if(!ctexto($objeto,"vazio", 1)){//atualizar diagram de fluxo de dados com esse item
+        $objeto = verificarObjeto($mensagem,$id);
+        if($objeto != 0){//atualizar diagram de fluxo de dados com esse item
             $resposta = "Quantas vezes você irá lançar o(a) ".$objeto;
             atualizar_etapa($id, 3.1);
         }
     }
     if($etapa == 3.1){
         if($mensagem >0){
+            $problema = ultimoproblema($id);
+            $db->query("update problema set dado2=$mensagem where id_problema = $problema");
             $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
             atualizar_etapa($id, 3.2);
         }
     }
     if($etapa == 3.2){
-        $consulta = $db->query("select mensagem from historico where id_origem=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
-        $lancamentos = $consulta[count($consulta)-2]["mensagem"];
-        $objeto = verificarObjeto($consulta[count($consulta)-3]["mensagem"]);
-        $consulta = $db->query("select faces from objeto where nome='$objeto'")->fetchAll(PDO::FETCH_ASSOC);
-        $faces = $consulta[0]["faces"];
         if(ctexto($mensagem,"não",2)){
-            $resposta= calcular_espaco_amostral($lancamentos, $faces, false);
-        }else{
-            $resposta=  calcular_espaco_amostral($lancamentos,$faces, true);
+            $resposta = resolver($id, false);
+            $resposta = $resposta."\n Deseja resolver outro problema?";
+            atualizar_etapa($id, 4);
         }
-        $resposta = $resposta."\n Deseja resolver outro problema?";
-        atualizar_etapa($id, 4);
+        if(ctexto($mensagem,"sim",2)){
+            $resposta = resolver($id, true);
+            $resposta = $resposta."\n Deseja resolver outro problema?";
+            atualizar_etapa($id, 4);
+        }
     }
     if($etapa == 4){
         if(ctexto($mensagem, "sim", 2)){
@@ -160,7 +209,38 @@ function dialogo($id, $mensagem){
         atualizar_etapa($id,1);
         $resposta = "Veja só quem voltou?!?!\nSó me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
     }
+    /*if($etapa == 6){
+        $objeto = verificarObjeto($mensagem);
+        if(!ctexto($objeto,"vazio", 1)){//atualizar diagram de fluxo de dados com esse item
+            $resposta = "Quantas vezes o evento deve acontecer?";
+            atualizar_etapa($id, 6.1);
+        }
+    }
+    if($etapa ==6.1){
+        if($mensagem >0) {
+            $resposta = "Quantas vezes o evento deve acontecer?";
+            atualizar_etapa($id,6.2);
+        }
+    }
+    if(etapa == 6.2){
+        if($mensagem >0) {
+            $resposta = "Quantas vezes lançará o objeto?";
+            atualizar_etapa($id,6.3);
+        }
+    }
+    if(etapa == 6.3){
+        if($mensagem >0) {
+            $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
+            atualizar_etapa($id, 6.4);
+        }
+    }
+    if(etapa == 6.4){
+        $consulta = $db->query("select mensagem from historico where id_origem=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
 
+        if(ctexto($mensagem,"não",2)){
+            $resposta = calcular_probabilidade($evento,)
+        }
+    }*/
     /* if($mensagem == verificarCategoria($mensagem)) {
 
      }*/
