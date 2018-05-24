@@ -97,10 +97,11 @@ function verificarObjeto($message,$id_usuario){ // implementar no dialogo a troc
     foreach ($objeto as $value){
         if(ctexto($message,$value["nome"], 3)){
             $ob = $value["id_objeto"];
-            $ob = $value["nome"];
             $db->query("update problema set dado1=$ob where id_problema = $id");
+            $ob = $value["nome"];
         }
     }
+    debug($ob);
     return $ob;
 }
 
