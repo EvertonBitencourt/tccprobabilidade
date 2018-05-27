@@ -26,7 +26,7 @@ function processMessage($message) {
             }
             if ($caso == 2) {
                 atualizar_nome($text, $sender);//criar ainda
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Você sabe qual a categoria de seu problema ?')));
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Você sabe qual a categoria de seu problema?')));
             }
             if ($caso == 3) {
                 $resposta = dialogo($sender, $text);

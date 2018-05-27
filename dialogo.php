@@ -8,13 +8,13 @@
 
 function dialogo($id, $mensagem){
 
-    $resposta = "não entendi sua mensagem, por favor digite novamente, verificando sua ortografia, eu sou sensivel :( ";
+    $resposta = "Não entendi sua mensagem. Por favor, digite novamente, verificando sua ortografia.";
     $db = abrir_banco();
 
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
     $etapa = $consulta_etapa[0];
     if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
-        $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria?";
+        $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria.";
         atualizar_etapa($id, 2);
         $etapa = 0;
     }
@@ -24,14 +24,14 @@ function dialogo($id, $mensagem){
             $resposta ="Qual é a categoria?"; //teste
         }
         if(ctexto($mensagem,"não", 2)){
-            $resposta ="Veja o material que seu professor compartilhou com você em sala de aula ou consulte: https://brasilescola.uol.com.br/matematica/probabilidade.htm \n Após a consulta informe a categoria de seu problema entre as categorias abaixo: \n Espaço Amostral \n Probabilidade"; //teste
+            $resposta ="Consulte seu material disponibilizado pelo seu professor(a) ou, se preferir, consulte:\nhttps://brasilescola.uol.com.br/matematica/probabilidade.htm\nApós a consulta, informe a categoria de seu problema entre as listadas abaixo: \nEspaço Amostral\nProbabilidade"; //teste
             atualizar_etapa($id, 2);
         }
     }
     if($etapa == 2){
         $categoria = verificarCategoria($mensagem,$id);
         if($categoria == 2 || $categoria == 3){
-            $resposta = "Para lhe ajudar melhor preciso saber algumas informações de seu problema, favor responda claramente os próximos questionamentos.\n Você irá retirar ou lançar algo?";
+            $resposta = "Para lhe ajudar melhor preciso saber algumas informações de seu problema. Por favor, responda claramente os próximos questionamentos.\nVocê irá retirar um objeto de um conjunto ou lançar algo (moeda, dado)?";
             atualizar_etapa($id, 2.5);
         }
         if($categoria == 1){
@@ -42,7 +42,7 @@ function dialogo($id, $mensagem){
         if(ctexto($mensagem, "lançar",3)){
             $problema = ultimoproblema($id);
             definirdado($problema,1,$mensagem);
-            $resposta = "Qual objeto está usando?";
+            $resposta = "Qual objeto será lançado?";
             atualizar_etapa($id, 3);
         }
         if(ctexto($mensagem, "retirar", 3)){
@@ -60,7 +60,7 @@ function dialogo($id, $mensagem){
             atualizar_etapa($id, 2.7);
         }
         if($mensagem <2){
-            $resposta = "Você precisar ter pelo menos dois objetos distintos!\nInforme uma nova quantidade de objetos";
+            $resposta = "Atenção! Você precisa ter pelo menos dois objetos distintos!\nInforme uma nova quantidade de objetos:";
         }
     }
     if($etapa == 2.7){
@@ -88,7 +88,7 @@ function dialogo($id, $mensagem){
                         $resposta = "Quantas retiradas irá fazer?";
                         atualizar_etapa($id, 2.9);
                     } else{
-                        $resposta = "Qual nome do próximo objeto?";
+                        $resposta = "Qual nome do próximo objeto a ser retirado?";
                         atualizar_etapa($id, 2.7);
                     }
                     $flag = false;
@@ -184,19 +184,19 @@ function dialogo($id, $mensagem){
                 }
                 definirdado($problema,4,$mensagem);
             }
-            $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
+            $resposta = "Você deseja obter uma resposta detalhada?";
             atualizar_etapa($id, 3.2);
         }
     }
     if($etapa == 3.2){
         if(ctexto($mensagem,"não",2)){
             $resposta = resolver($id, false);
-            $resposta = $resposta."\n Deseja resolver outro problema?";
+            $resposta = $resposta."\nDeseja resolver outro problema?";
             atualizar_etapa($id, 4);
         }
         if(ctexto($mensagem,"sim",2)){
             $resposta = resolver($id, true);
-            $resposta = $resposta."\n Deseja resolver outro problema?";
+            $resposta = $resposta."\nDeseja resolver outro problema?";
             atualizar_etapa($id, 4);
         }
     }
@@ -207,12 +207,12 @@ function dialogo($id, $mensagem){
         }
         if(ctexto($mensagem, "não", 2)){
             atualizar_etapa($id, 5);
-            $resposta = "Vá conversar com a siri então.";
+            $resposta = "Ok, até logo!";
         }
     }
     if($etapa == 5){
         atualizar_etapa($id,1);
-        $resposta = "Veja só quem voltou?!?!\nSó me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
+        $resposta = "Veja só quem voltou?!?!\nSó me procura quando tens problemas, não é mesmo?\nVocê sabe qual a categoria do seu problema?";
     }
     /*if($etapa == 6){
         $objeto = verificarObjeto($mensagem);
