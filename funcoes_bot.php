@@ -5,7 +5,9 @@
  * Date: 21/05/2018
  * Time: 10:00
  */
+
 require 'db.class.php';
+require 'dialogo.php';
 function processMessage($message) {
     // processa a mensagem recebida
     $results = print_r($message, true);
@@ -47,6 +49,7 @@ function abrir_banco(){
         'ec2-50-16-204-127.compute-1.amazonaws.com'//servidor
     );
 }
+
 /*
 function consulta_msg($id, $quantidade){
     $db = abrir_banco();
@@ -83,7 +86,8 @@ function verificarCategoria($texto,$idusuario){
     }
     return $cat_lev;
 }
-function ultimoproblema($id_usuario){
+
+function ultimoproblema($id_usuario){ //encontrar o último problema, para fornecer informações para o metodo resolver
     $db = abrir_banco();
     $id = $db->query("SELECT id_problema FROM problema where id_usuario=$id_usuario order by data_hora desc")->fetchAll(PDO::FETCH_ASSOC);
     return $id[0]["id_problema"]; //$id[0]=>["id_problema"]
@@ -97,35 +101,139 @@ function verificarObjeto($message,$id_usuario){ // implementar no dialogo a troc
     foreach ($objeto as $value){
         if(ctexto($message,$value["nome"], 3)){
             $ob = $value["id_objeto"];
-            $db->query("update problema set dado1=$ob where id_problema = $id");
+            definirdado($id,2,$ob);
             $ob = $value["nome"];
         }
     }
-    debug($ob);
     return $ob;
+}
+function obterdado($id_problema, $id){
+    $db = abrir_banco();
+    $valor = $db->query("select valor from dado where id_problema = $id_problema and id = $id")->fetch()['valor'];
+    return $valor;
+}
+
+function obterdados($id_problema){
+    $db = abrir_banco();
+    $dados = $db->query("SELECT valor FROM dado WHERE id_problema = $id_problema ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
+    return $dados;
+}
+
+function definirdado($id_problema, $id, $valor){
+    $db = abrir_banco();
+    $db->query("insert into dado (id_problema, id, valor) values ($id_problema,$id,'$valor')");
+}
+function atualizardado($id_problema,$id,$valor){
+    $db = abrir_banco();
+    $db->query("update dado set valor = '$valor' where id_problema=$id_problema and id=$id");
 }
 
 function resolver($id_usuario, $detalhado){
     $db = abrir_banco();
     $id_problema = ultimoproblema($id_usuario);
     $problema = $db->query("SELECT * FROM problema where id_problema = $id_problema")->fetch();
-    $dado1 = $problema["dado1"];
-    $dado2 = $problema["dado2"];
-    $dado3 = $problema["dado3"];
-    $dado4 = $problema["dado4"];
     $categoria_problema = $problema["id_categoria"];
     if($categoria_problema == 1){
 
     }
     if($categoria_problema == 2){
+        $dado1 = obterdado($id_problema,2);
         $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
-        $solucao = calcular_espaco_amostral($dado2, $faces, $detalhado);
+        $solucao = calcular_espaco_amostral(obterdado($id_problema,3), $faces, $detalhado);
     }
     if($categoria_problema == 3){
-        $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
-        $solucao = calcular_probabilidade($dado2, $faces, $dado3, $detalhado);
+        $dado1 = obterdado($id_problema,1);
+        if(ctexto($dado1,"lançar",3)) {
+            $dado2 = obterdado($id_problema,2);
+            $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado2")->fetch()["faces"];
+            $solucao = calcular_probabilidade(obterdado($id_problema, 3), $faces, obterdado($id_problema, 4), $detalhado);
+        }
+        if(ctexto($dado1,"retirar",3)){
+            $consulta = obterdado($id_problema,2)*2+3;
+            $qretiradas =obterdado($id_problema,$consulta);
+            $independe = obterdado($id_problema,$qretiradas+$consulta+1);
+            if(ctexto($independe,"true",2)){
+                $solucao = calcular_probabilidade_retirada_independente($id_problema,$detalhado);
+            }else /*($independe == "false")*/{
+                $solucao = calcular_probabilidade_retirada_dependente($id_problema,$detalhado);
+            }
+        }
     }
     return $solucao;
+}
+
+function calcular_probabilidade_retirada_independente($id_problema,$detalhado){
+    $dados = obterdados($id_problema);
+    $qobjetos = $dados[1]['valor'];
+    $consulta = $qobjetos*2+2;
+    $qretiradas = $dados[$consulta]['valor'];
+    $total = 0;
+    $limite = $qobjetos * 2 + 3;
+    $count = 3;
+    while($count < $limite){
+        $total += $dados[$count]['valor'];
+        $count+=2;
+    }
+    $count = $qobjetos * 2 + 3;
+    $aretirar = $dados[$count]['valor'];
+    $probabilidade = $dados[$aretirar]['valor'] / $total;
+    $qretiradas--;
+    $count++;
+    while ($qretiradas > 0 ) {
+        $aretirar = $dados[$count]['valor'];            //obterdado($id_problema,$count)+1;
+        $atual = $dados[$aretirar]['valor'] / $total;
+        $probabilidade = $probabilidade * $atual;// ai está o P - R - O - B - L - E - M - A
+        $qretiradas--;
+        $count++;
+    }
+    $probabilidade = round($probabilidade*100,2)."%";
+    return $probabilidade;
+}
+
+function calcular_probabilidade_retirada_dependente($id_problema,$detalhado){
+    $dados = obterdados($id_problema);
+    $qobjetos = $dados[1]['valor'];
+    $consulta = $qobjetos*2+2;
+    $qretiradas = $dados[$consulta]['valor'];
+    $total = 0;
+    $limite = $qobjetos * 2 + 3;
+    $count = 3;
+    while($count < $limite){
+        $total += $dados[$count]['valor'];
+        $count+=2;
+    }
+    $count = $qobjetos * 2 + 3;
+    $aretirar = $dados[$count]['valor'];
+    $probabilidade = $dados[$aretirar]['valor'] / $total;
+    $novo = $dados[$aretirar]['valor'] - 1 ;
+    $dados[$aretirar]['valor'] = $novo;
+    $qretiradas--;
+    $count++;
+    $total--;
+    while ($qretiradas > 0 ) {
+        $aretirar = $dados[$count]['valor'];            //obterdado($id_problema,$count)+1;
+        $atual = $dados[$aretirar]['valor'] / $total;
+        $probabilidade = $probabilidade * $atual;// ai está o P - R - O - B - L - E - M - A
+        $novo = $dados[$aretirar]['valor'] - 1; // obterdado($id_problema,$aretirar)-1;
+        $dados[$aretirar]['valor'] = $novo;
+        $qretiradas--;
+        $count++;
+        $total--;
+    }
+    $probabilidade = round($probabilidade*100,2)."%";
+    return $probabilidade;
+}
+function identificarobjeto($id_problema,$objeto){
+    $limite = obterdado($id_problema,2)*2+2;
+    $contador = 3;
+    $posicao = false;
+    while($contador <=$limite){
+        if(ctexto($objeto, obterdado($id_problema,$contador),3)){
+            $posicao = $contador;
+            break;
+        }else{$contador +=2;}
+    }
+    return $posicao;
 }
 
 function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
@@ -150,128 +258,6 @@ function calcular_probabilidade($lancamento, $faces, $eventos, $detalhado){
 function obter_categoria($id_problema){
     $db = abrir_banco();
     return $db->query("select id_categoria from problema where id_problema = $id_problema")->fetch()["id_categoria"];
-}
-
-function dialogo($id, $mensagem){
-
-    $resposta = "não entendi sua mensagem, por favor digite novamente, verificando sua ortografia, eu sou sensivel :( ";
-    $db = abrir_banco();
-
-    $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
-    $etapa = $consulta_etapa[0];
-    if($etapa == 1){
-        if(ctexto($mensagem,"sim", 2)){
-            atualizar_etapa($id, 2);
-            $resposta ="Qual é a categoria?"; //teste
-        }
-        if(ctexto($mensagem,"não", 2)){
-            $resposta ="Veja o material que seu professor compartilhou com você em sala de aula ou consulte: https://brasilescola.uol.com.br/matematica/probabilidade.htm \n Após a consulta informe a categoria de seu problema entre as categorias abaixo: \n Espaço Amostral \n Arranjos e Permutações"; //teste
-            atualizar_etapa($id, 2);
-        }
-    }
-    if($etapa == 2){
-        $categoria = verificarCategoria($mensagem,$id);
-        if($categoria == 2 || $categoria == 3){
-            $resposta = "Para lhe ajudar melhor preciso saber algumas informações de seu problema, favor responda claramente os próximos questionamentos. Qual objeto está usando?";
-            atualizar_etapa($id, 3);
-        }
-    }
-    if($etapa == 3){
-        $objeto = verificarObjeto($mensagem,$id);
-        if($objeto != false){//atualizar diagram de fluxo de dados com esse item
-            $resposta = "Quantas vezes você irá lançar o(a) ".$objeto;
-            if(obter_categoria(ultimoproblema($id)) == 3) atualizar_etapa($id,3.05);
-            else atualizar_etapa($id, 3.1);
-        }
-    }
-    if($etapa == 3.05){
-        if($mensagem >0){
-            $problema = ultimoproblema($id);
-            $db->query("update problema set dado2=$mensagem where id_problema = $problema");
-            $resposta = "Deseja obter a probabilidade de quantos eventos?";
-            atualizar_etapa($id, 3.1);
-        }
-    }
-    if($etapa == 3.1){
-        if($mensagem >0){
-            $problema = ultimoproblema($id);
-            if(obter_categoria($problema) == 2){
-                $db->query("update problema set dado2=$mensagem where id_problema = $problema");
-            }
-            if(obter_categoria($problema) == 3){
-                $faces = $db ->query("select dado1 from problema where id_problema = $problema") ->fetch()["dado1"];
-                $faces = $db ->query("select faces from objeto where id_objeto = $faces") ->fetch()["faces"];
-                if($faces < $mensagem){
-                    $mensagem = $faces;
-                }
-                $db->query("update problema set dado3=$mensagem where id_problema = $problema");
-            }
-            $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
-            atualizar_etapa($id, 3.2);
-        }
-    }
-    if($etapa == 3.2){
-        if(ctexto($mensagem,"não",2)){
-            $resposta = resolver($id, false);
-            $resposta = $resposta."\n Deseja resolver outro problema?";
-            atualizar_etapa($id, 4);
-        }
-        if(ctexto($mensagem,"sim",2)){
-            $resposta = resolver($id, true);
-            $resposta = $resposta."\n Deseja resolver outro problema?";
-            atualizar_etapa($id, 4);
-        }
-    }
-    if($etapa == 4){
-        if(ctexto($mensagem, "sim", 2)){
-            atualizar_etapa($id, 1);
-            $resposta ="Você sabe qual é a categoria?";
-        }
-        if(ctexto($mensagem, "não", 2)){
-            atualizar_etapa($id, 5);
-            $resposta = "Vá conversar com a siri então.";
-        }
-    }
-    if($etapa == 5){
-        atualizar_etapa($id,1);
-        $resposta = "Veja só quem voltou?!?!\nSó me procura quando tens problemas, não é mesmo? \n Você sabe qual a categoria do seu problema?";
-    }
-    /*if($etapa == 6){
-        $objeto = verificarObjeto($mensagem);
-        if(!ctexto($objeto,"vazio", 1)){//atualizar diagram de fluxo de dados com esse item
-            $resposta = "Quantas vezes o evento deve acontecer?";
-            atualizar_etapa($id, 6.1);
-        }
-    }
-    if($etapa ==6.1){
-        if($mensagem >0) {
-            $resposta = "Quantas vezes o evento deve acontecer?";
-            atualizar_etapa($id,6.2);
-        }
-    }
-    if(etapa == 6.2){
-        if($mensagem >0) {
-            $resposta = "Quantas vezes lançará o objeto?";
-            atualizar_etapa($id,6.3);
-        }
-    }
-    if(etapa == 6.3){
-        if($mensagem >0) {
-            $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
-            atualizar_etapa($id, 6.4);
-        }
-    }
-    if(etapa == 6.4){
-        $consulta = $db->query("select mensagem from historico where id_origem=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
-
-        if(ctexto($mensagem,"não",2)){
-            $resposta = calcular_probabilidade($evento,)
-        }
-    }*/
-    /* if($mensagem == verificarCategoria($mensagem)) {
-
-     }*/
-    return $resposta;
 }
 
 function salvar_mensagem($idorigem, $mensagem, $idest){
