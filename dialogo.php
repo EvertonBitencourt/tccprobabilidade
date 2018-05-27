@@ -13,13 +13,17 @@ function dialogo($id, $mensagem){
 
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
     $etapa = $consulta_etapa[0];
+    if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
+        $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria?";
+        atualizar_etapa($id, 2);
+    }
     if($etapa == 1){
         if(ctexto($mensagem,"sim", 2)){
             atualizar_etapa($id, 2);
             $resposta ="Qual é a categoria?"; //teste
         }
         if(ctexto($mensagem,"não", 2)){
-            $resposta ="Veja o material que seu professor compartilhou com você em sala de aula ou consulte: https://brasilescola.uol.com.br/matematica/probabilidade.htm \n Após a consulta informe a categoria de seu problema entre as categorias abaixo: \n Espaço Amostral \n Arranjos e Permutações"; //teste
+            $resposta ="Veja o material que seu professor compartilhou com você em sala de aula ou consulte: https://brasilescola.uol.com.br/matematica/probabilidade.htm \n Após a consulta informe a categoria de seu problema entre as categorias abaixo: \n Espaço Amostral \n Probabilidade"; //teste
             atualizar_etapa($id, 2);
         }
     }
