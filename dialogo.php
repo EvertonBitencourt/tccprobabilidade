@@ -16,6 +16,7 @@ function dialogo($id, $mensagem){
     if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
         $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria?";
         atualizar_etapa($id, 2);
+        $etapa = 0;
     }
     if($etapa == 1){
         if(ctexto($mensagem,"sim", 2)){
