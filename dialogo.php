@@ -35,9 +35,10 @@ function dialogo($id, $mensagem){
     if($etapa == 1.2){
         $categoria = verificarCategoria($mensagem,$id);
         if($categoria == 2 || $categoria == 3){
-            $resposta = mostrar_problemas_categoria($categoria);
+            $resposta = "Acesse http://approbabilidade.herokuapp.com/exerciciosprontos.html";
+            $etapa = "a1";
         }
-        $etapa = "a1";
+
     }
     if($etapa == 2){
         $categoria = verificarCategoria($mensagem,$id);
@@ -214,13 +215,13 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == "a1"){
-        $resposta = $resposta."\nDeseja resolver outro problema?";
+        $resposta = $resposta."\nDeseja fazer outra coisa?";
         atualizar_etapa($id, 4);
     }
     if($etapa == 4){
         if(ctexto($mensagem, "sim", 2)){
             atualizar_etapa($id, 1);
-            $resposta ="Você sabe qual é a categoria?";
+            $resposta ="O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
         }
         if(ctexto($mensagem, "não", 2)){
             atualizar_etapa($id, 5);
