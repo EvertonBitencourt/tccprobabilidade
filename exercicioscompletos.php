@@ -1,6 +1,6 @@
 <?php
 
-require 'db.class.php';
+/*require 'db.class.php';
 //inicia a conexão
 
 $db = new DB( 'lzrymjxrdqcmhe', //usuario
@@ -17,7 +17,9 @@ $db = new DB( 'lzrymjxrdqcmhe', //usuario
 foreach ($consulta as $linha) {
     $array[] = $linha;
   }
-  	echo json_encode($array, JSON_UNESCAPED_UNICODE);
+  	echo json_encode($array, JSON_UNESCAPED_UNICODE);*/
+
+
  
 
 ?>

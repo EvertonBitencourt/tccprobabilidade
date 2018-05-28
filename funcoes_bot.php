@@ -22,18 +22,15 @@ function processMessage($message) {
             $caso = verificar_usuario_bd($sender);
 
             if ($caso == 1) {
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Olá! Eu sou o professor Learaar que vai lhe ajudar a solucionar os seus problemas de probabilidade! Para começar preciso saber seu nome?')));
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Olá! Eu sou o professor Learaar que vai lhe ajudar a estudar e se preparar para solucionar problemas de probabilidade! Para começar preciso saber seu nome?')));
             }
             if ($caso == 2) {
-                atualizar_nome($text, $sender);//criar ainda
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Você sabe qual a categoria de seu problema?')));
+                atualizar_nome($text, $sender);
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.')));
             }
             if ($caso == 3) {
                 $resposta = dialogo($sender, $text);
-                //sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' =>consulta_msg(1406614996122042,20))));
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' =>$resposta)));
-                //verificarCategoria($text);
-
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => $resposta)));
                 // usar para consultar select to_char(data_hora, 'dd/mm/yyyy hh24:mi') from historico;
             }
         }

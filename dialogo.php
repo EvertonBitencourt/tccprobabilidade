@@ -16,17 +16,28 @@ function dialogo($id, $mensagem){
     if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
         $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria.";
         atualizar_etapa($id, 2);
-        $etapa = 0;
+
     }
     if($etapa == 1){
-        if(ctexto($mensagem,"sim", 2)){
-            atualizar_etapa($id, 2);
-            $resposta ="Qual é a categoria?"; //teste
+        if($mensagem == 1){
+            $resposta = "Consulte um dos sites da lista abaixo: \nDetalhar lista";
+            $etapa = "a1";
         }
-        if(ctexto($mensagem,"não", 2)){
-            $resposta ="Consulte seu material disponibilizado pelo seu professor(a) ou, se preferir, consulte:\nhttps://brasilescola.uol.com.br/matematica/probabilidade.htm\nApós a consulta, informe a categoria de seu problema entre as listadas abaixo: \nEspaço Amostral\nProbabilidade"; //teste
-            atualizar_etapa($id, 2);
+        if($mensagem == 2){
+            $resposta = "Qual a categoria do seu problema?";
+            atualizar_etapa($id,2);
         }
+        if($mensagem == 3){
+            $resposta = "Qual a categoria do seu problema?";
+            atualizar_etapa($id,1.2);
+        }
+    }
+    if($etapa == 1.2){
+        $categoria = verificarCategoria($mensagem,$id);
+        if($categoria == 2 || $categoria == 3){
+            $resposta = mostrar_problemas_categoria($categoria);
+        }
+        $etapa = "a1";
     }
     if($etapa == 2){
         $categoria = verificarCategoria($mensagem,$id);
@@ -117,6 +128,10 @@ function dialogo($id, $mensagem){
         while ($flag) {
             if($idado>30){$flag=false;}
             if (!isset($dados[$idado]['valor'])) {
+                if(identificarobjeto($problema,$mensagem) === false){
+                    $resposta = "Esse objeto não existe no conjunto que estamos retirando. Diga o nome correto.";
+                    break;
+                }
                 definirdado($problema, $idado + 1, identificarobjeto($problema,$mensagem)); //passando o nome do objeto a ser retirado
                 if ($qretiradas == $idado - $consulta) {
                     $resposta = "São eventos independentes?";
@@ -191,14 +206,16 @@ function dialogo($id, $mensagem){
     if($etapa == 3.2){
         if(ctexto($mensagem,"não",2)){
             $resposta = resolver($id, false);
-            $resposta = $resposta."\nDeseja resolver outro problema?";
-            atualizar_etapa($id, 4);
+            $etapa = "a1";
         }
         if(ctexto($mensagem,"sim",2)){
             $resposta = resolver($id, true);
-            $resposta = $resposta."\nDeseja resolver outro problema?";
-            atualizar_etapa($id, 4);
+            $etapa = "a1";
         }
+    }
+    if($etapa == "a1"){
+        $resposta = $resposta."\nDeseja resolver outro problema?";
+        atualizar_etapa($id, 4);
     }
     if($etapa == 4){
         if(ctexto($mensagem, "sim", 2)){
