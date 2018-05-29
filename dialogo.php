@@ -16,7 +16,6 @@ function dialogo($id, $mensagem){
     if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
         $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria.";
         atualizar_etapa($id, 2);
-
     }
     if($etapa == 1){
         if($mensagem == 1){
@@ -38,7 +37,6 @@ function dialogo($id, $mensagem){
             $resposta = "Acesse http://approbabilidade.herokuapp.com/exerciciosprontos.html";
             $etapa = "a1";
         }
-
     }
     if($etapa == 2){
         $categoria = verificarCategoria($mensagem,$id);
@@ -170,14 +168,6 @@ function dialogo($id, $mensagem){
             else atualizar_etapa($id, 3.1);
         }
     }
-    /*if($etapa == 3.05){ voltar AQUI PARA ARRUMAR O FLUXO
-        if($mensagem >0){
-            $problema = ultimoproblema($id);
-            $db->query("update problema set dado2=$mensagem where id_problema = $problema");
-            $resposta = "São eventos distintos?";
-            atualizar_etapa($id, 3.07);
-        }
-    }*/
     if($etapa == 3.07){
         if($mensagem >0){
             $problema = ultimoproblema($id);
@@ -230,42 +220,8 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 5){
         atualizar_etapa($id,1);
-        $resposta = "Veja só quem voltou?!?!\nSó me procura quando tens problemas, não é mesmo?\nVocê sabe qual a categoria do seu problema?";
+        $resposta = "Veja só quem voltou!\nO que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
     }
-    /*if($etapa == 6){
-        $objeto = verificarObjeto($mensagem);
-        if(!ctexto($objeto,"vazio", 1)){//atualizar diagram de fluxo de dados com esse item
-            $resposta = "Quantas vezes o evento deve acontecer?";
-            atualizar_etapa($id, 6.1);
-        }
-    }
-    if($etapa ==6.1){
-        if($mensagem >0) {
-            $resposta = "Quantas vezes o evento deve acontecer?";
-            atualizar_etapa($id,6.2);
-        }
-    }
-    if(etapa == 6.2){
-        if($mensagem >0) {
-            $resposta = "Quantas vezes lançará o objeto?";
-            atualizar_etapa($id,6.3);
-        }
-    }
-    if(etapa == 6.3){
-        if($mensagem >0) {
-            $resposta = "Você deseja ter uma resposta detalhada? Responda com sim ou não.";
-            atualizar_etapa($id, 6.4);
-        }
-    }
-    if(etapa == 6.4){
-        $consulta = $db->query("select mensagem from historico where id_origem=$id order by data_hora")->fetchAll(PDO::FETCH_ASSOC);
 
-        if(ctexto($mensagem,"não",2)){
-            $resposta = calcular_probabilidade($evento,)
-        }
-    }*/
-    /* if($mensagem == verificarCategoria($mensagem)) {
-
-     }*/
     return $resposta;
 }
