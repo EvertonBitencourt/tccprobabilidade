@@ -12,3 +12,5 @@ if ($hub_verify_token === VERIFY_TOKEN) {
 }
 //-----FIM VERIFICAÇÃO-----//
 ?>
+
+

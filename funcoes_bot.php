@@ -159,88 +159,6 @@ function resolver($id_usuario, $detalhado){
     return $solucao;
 }
 
-/*function calcular_probabilidade_retirada_independente($id_problema,$detalhado){
-    $dados = obterdados($id_problema);
-    $qobjetos = $dados[1]['valor'];
-    $consulta = $qobjetos*2+2;
-    $qretiradas = $dados[$consulta]['valor'];
-    $total = 0;
-    $limite = $qobjetos * 2 + 3;
-    $count = 3;
-    while($count < $limite){
-        $total += $dados[$count]['valor'];
-        $count+=2;
-    }
-    $count = $qobjetos * 2 + 3;
-    $aretirar = $dados[$count]['valor'];
-    $probabilidade = $dados[$aretirar]['valor'] / $total;
-    $qretiradas--;
-    $count++;
-    while ($qretiradas > 0 ) {
-        $aretirar = $dados[$count]['valor'];
-        $atual = $dados[$aretirar]['valor'] / $total;
-        $probabilidade = $probabilidade * $atual;
-        $qretiradas--;
-        $count++;
-    }
-    $probabilidade = round($probabilidade*100,2)."%";
-    if($detalhado){
-        $objeto = 2;
-        $texto = "";
-        while($qobjetos> 0){
-            $texto = $texto."A quantidade de ".$dados[$objeto]['valor']." é ".$dados[$objeto+1]['valor']." em ".$total.".\n";
-            $objeto +=2;
-            $qobjetos --;
-            // A quantidade de camisa polo é 4 em 12.
-            // A quantidade de camisa normal é 8 em 12.
-        }
-        $consulta = $dados[1]['valor']*2+2;
-        $qretiradas = $dados[$consulta]['valor'];
-        while($qretiradas>0){
-            $aretirar = $dados[$consulta+1]['valor'];
-            $texto = $texto."Retiramos ".$dados[$aretirar-1]['valor']." = ".$dados[$aretirar]['valor']." em ".$total.".\n";
-            $qretiradas --;
-            $consulta ++;
-        }
-        $consulta = $dados[1]['valor']*2+2;
-        $qretiradas = $dados[$consulta]['valor'];
-        while($qretiradas>0){
-            $aretirar = $dados[$consulta+1]['valor'];
-            if($qretiradas>1){
-                $texto = $texto.$dados[$aretirar]['valor']."/".$total." * ";
-            }else $texto = $texto.$dados[$aretirar]['valor']."/".$total."=\n";
-            $qretiradas --;
-            $consulta ++;
-        }
-        $consulta = $dados[1]['valor']*2+2;
-        $qretiradas = $dados[$consulta]['valor'];
-        $qobjetos = $dados[1]['valor'];
-        $count = $qobjetos * 2 + 3;
-        $aretirar = $dados[$count]['valor'];
-        $probabilidade1 = $dados[$aretirar]['valor'] / $total;
-        $texto = $texto.$probabilidade." * ";
-        while($qretiradas){
-            $aretirar = $dados[$count]['valor'];
-            $atual = $dados[$aretirar]['valor'] / $total;
-            $probabilidade1 = $probabilidade1 * $atual;
-            $qretiradas--;
-            $count++;
-            $texto = $texto.$probabilidade1."= ";
-        }
-        $probabilidade = $texto.$probabilidade;
-
-            "Camisas gola normal: 8 em 12.
-            Camisas gola polo: 4 em 12.
-            Retirando camisas gola polo sucessivamente, sem reposição:
-            1º retirada gola polo = 4 em 12.
-            2º retirada considerando a 1º gola polo = 3 em 12.
-            4/12 * 4/12 = 16/144 = 0,111 = 11,11%.
-            A probabilidade é de 9,09%."
-
-    }
-    return $probabilidade;
-}*/
-
 function calcular_probabilidade_retirada_independente($id_problema,$detalhado){
     $texto = "";
     $dados = obterdados($id_problema);
@@ -292,36 +210,49 @@ function calcular_probabilidade_retirada_independente($id_problema,$detalhado){
     $texto = $texto."= ".$probabilidade."\n";
     $probabilidade = round($probabilidade*100,2)."%";
 
-
     if($detalhado){
         $probabilidade = $texto.$probabilidade;
-
-        /* "Camisas gola normal: 8 em 12.
-            Camisas gola polo: 4 em 12.
-            Retirando camisas gola polo sucessivamente, sem reposição:
-            1º retirada gola polo = 4 em 12.
-            2º retirada considerando a 1º gola polo = 3 em 12.
-            4/12 * 4/12 = 16/144 = 0,111 = 11,11%.
-            A probabilidade é de 9,09%." */
-
     }
     return $probabilidade;
 }
 
 function calcular_probabilidade_retirada_dependente($id_problema,$detalhado){
+    $texto = "";
     $dados = obterdados($id_problema);
-    $qobjetos = $dados[1]['valor'];
-    $consulta = $qobjetos*2+2;
+    $consulta = $dados[1]['valor']*2+2;
     $qretiradas = $dados[$consulta]['valor'];
     $total = 0;
-    $limite = $qobjetos * 2 + 3;
+    $limite = $dados[1]['valor'] * 2 + 3;
     $count = 3;
     while($count < $limite){
         $total += $dados[$count]['valor'];
         $count+=2;
     }
-    $count = $qobjetos * 2 + 3;
+    $count=2;
+    $qobjetos = $dados[1]['valor'];
+    while($qobjetos> 0){
+        $texto = $texto."A quantidade de ".$dados[$count]['valor']." é ".$dados[$count+1]['valor']." em ".$total.".\n";
+        $count +=2;
+        $qobjetos --;
+    }
+    $temp = $total;
+    $dtemp = $dados;
+    while($qretiradas>0){
+        $aretirar = $dtemp[$consulta+1]['valor'];
+        $texto = $texto."Retiramos ".$dtemp[$aretirar-1]['valor']." = ".$dtemp[$aretirar]['valor']." em ".$temp.".\n";
+        $novo = $dtemp[$aretirar]['valor'] - 1 ;
+        $dtemp[$aretirar]['valor'] = $novo;
+        $qretiradas --;
+        $consulta ++;
+        $temp--;
+    }
+    $consulta = $dados[1]['valor']*2+2;
+    $qretiradas = $dados[$consulta]['valor'];
+    $count = $dados[1]['valor'] * 2 + 3;
     $aretirar = $dados[$count]['valor'];
+    $texto = $texto.$dados[$aretirar]['valor']."/".$total." ";
+    $v1 = $dados[$aretirar]['valor'];
+    $v2 = $total;
     $probabilidade = $dados[$aretirar]['valor'] / $total;
     $novo = $dados[$aretirar]['valor'] - 1 ;
     $dados[$aretirar]['valor'] = $novo;
@@ -329,18 +260,27 @@ function calcular_probabilidade_retirada_dependente($id_problema,$detalhado){
     $count++;
     $total--;
     while ($qretiradas > 0 ) {
-        $aretirar = $dados[$count]['valor'];            //obterdado($id_problema,$count)+1;
+        $aretirar = $dados[$count]['valor'];
         $atual = $dados[$aretirar]['valor'] / $total;
-        $probabilidade = $probabilidade * $atual;// ai está o P - R - O - B - L - E - M - A
-        $novo = $dados[$aretirar]['valor'] - 1; // obterdado($id_problema,$aretirar)-1;
+        $texto = $texto."* ".$dados[$aretirar]['valor']."/".$total." = ".$v1*$dados[$aretirar]['valor']."/".$v2*$total." ";
+        $v1 = $v1 * $dados[$aretirar]['valor'];
+        $v2 = $v2 * $total;
+        $probabilidade = $probabilidade * $atual;
+        $novo = $dados[$aretirar]['valor'] - 1 ;
         $dados[$aretirar]['valor'] = $novo;
         $qretiradas--;
         $count++;
         $total--;
     }
+    $texto = $texto."= ".$probabilidade."\n";
     $probabilidade = round($probabilidade*100,2)."%";
+
+    if($detalhado){
+        $probabilidade = $texto.$probabilidade;
+    }
     return $probabilidade;
 }
+
 function identificarobjeto($id_problema,$objeto){
     $limite = obterdado($id_problema,2)*2+2;
     $contador = 3;
