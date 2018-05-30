@@ -134,9 +134,14 @@ function resolver($id_usuario, $detalhado){
 
     }
     if($categoria_problema == 2){
-        $dado1 = obterdado($id_problema,2);
-        $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
-        $solucao = calcular_espaco_amostral(obterdado($id_problema,3), $faces, $detalhado);
+        $dado1 = obterdado($id_problema,1);
+        if(ctexto($dado1,"retirar",3)){
+            $solucao = calcular_espaco_amostral_retirar($id_problema,$detalhado);
+        }
+        if(ctexto($dado1,"lançar",3)){
+            $faces = $db->query("SELECT faces FROM objeto where id_objeto = $dado1")->fetch()["faces"];
+            $solucao = calcular_espaco_amostral(obterdado($id_problema,3), $faces, $detalhado);
+        }
     }
     if($categoria_problema == 3){
         $dado1 = obterdado($id_problema,1);
@@ -157,6 +162,35 @@ function resolver($id_usuario, $detalhado){
         }
     }
     return $solucao;
+}
+
+function calcular_espaco_amostral_retirar($id_problema,$detalhado){
+    if($detalhado){
+        $texto= "O espaço amostral neste caso é a multiplicação do total objetos a cada retirada, logo ";
+        $dados = obterdados($id_problema);
+        $consulta = $dados[1]['valor'];
+        $total = 0;
+        while($consulta>0){
+            $total += $dados[$consulta*2+1]['valor'];
+            $texto = $texto.$dados[$consulta*2+1]['valor'];
+            if($consulta != 1){
+                $texto = $texto." + ";
+            }else{$texto = $texto." = ".$total."\n";}
+            $consulta --;
+        }
+        $qretiradas = $dados[$dados[1]['valor']*2+2]['valor'];
+        $qretiradas --;
+        $temp = $total;
+        while($qretiradas > 0){
+            $total *= $total;
+            $texto = $texto.$temp;
+            if($qretiradas != 1){
+                $texto = $texto." * ";
+            }else{$texto = $texto." * ".$temp." = ".$total."\n";}
+            $qretiradas --;
+        }
+    }
+    return $texto;
 }
 
 function calcular_probabilidade_retirada_independente($id_problema,$detalhado){
@@ -302,6 +336,7 @@ function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
     }else
         return pow($faces,$lancamentos);
 }
+
 
 function calcular_probabilidade($lancamento, $faces, $eventos, $detalhado){
     $espaco = pow($faces, $lancamento);//2^2= 4

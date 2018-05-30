@@ -14,8 +14,8 @@ function dialogo($id, $mensagem){
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
     $etapa = $consulta_etapa[0];
     if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
-        $resposta = "Você resolveu cancelar o último problema, escolha novamente uma categoria.";
-        atualizar_etapa($id, 2);
+        $resposta = "Você resolveu cancelar o último problema, O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
+        atualizar_etapa($id, 1);
     }
     if($etapa == 1){
         if($mensagem == 1){
@@ -23,11 +23,11 @@ function dialogo($id, $mensagem){
             $etapa = "a1";
         }
         if($mensagem == 2){
-            $resposta = "Qual a categoria do seu problema?";
+            $resposta = "Qual a categoria do seu problema?\nProbabilidade\nEspaço Amostral";
             atualizar_etapa($id,2);
         }
         if($mensagem == 3){
-            $resposta = "Qual a categoria do seu problema?";
+            $resposta = "Qual a categoria do seu problema?\nProbabilidade\nEspaço Amostral";
             atualizar_etapa($id,1.2);
         }
     }
