@@ -173,11 +173,9 @@ function calcular_espaco_amostral_retirar($id_problema,$detalhado)
     $qretiradas = obterdado($id_problema, $consulta);
     $independe = obterdado($id_problema, $qretiradas + $consulta + 1);
     if (ctexto($independe, "true", 2)) {
-        if ($detalhado) {
+        $total = 0;
             $texto = "O espaço amostral neste caso é a multiplicação do total objetos a cada retirada, logo ";
-            $dados = obterdados($id_problema);
             $consulta = $dados[1]['valor'];
-            $total = 0;
             while ($consulta > 0) {
                 $total += $dados[$consulta * 2 + 1]['valor'];
                 $texto = $texto . $dados[$consulta * 2 + 1]['valor'];
@@ -202,12 +200,11 @@ function calcular_espaco_amostral_retirar($id_problema,$detalhado)
                 $qretiradas--;
             }
         }
-    } else {
-        if ($detalhado) {
+        else {
+        $total = 0;
             $texto = "O espaço amostral neste caso é a multiplicação do total objetos a cada retirada, logo ";
             $dados = obterdados($id_problema);
             $consulta = $dados[1]['valor'];
-            $total = 0;
             while ($consulta > 0) {
                 $total += $dados[$consulta * 2 + 1]['valor'];
                 $texto = $texto . $dados[$consulta * 2 + 1]['valor'];
@@ -232,9 +229,10 @@ function calcular_espaco_amostral_retirar($id_problema,$detalhado)
                 }
                 $qretiradas--;
             }
-        }
     }
-    return $texto;
+    if($detalhado){
+        return $texto;
+    }else { return $total;}
 }
 
 function calcular_probabilidade_retirada_independente($id_problema,$detalhado){
