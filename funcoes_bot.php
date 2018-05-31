@@ -104,6 +104,7 @@ function verificarObjeto($message,$id_usuario){ // implementar no dialogo a troc
     }
     return $ob;
 }
+
 function obterdado($id_problema, $id){
     $db = abrir_banco();
     $valor = $db->query("select valor from dado where id_problema = $id_problema and id = $id")->fetch()['valor'];
@@ -120,6 +121,7 @@ function definirdado($id_problema, $id, $valor){
     $db = abrir_banco();
     $db->query("insert into dado (id_problema, id, valor) values ($id_problema,$id,'$valor')");
 }
+
 function atualizardado($id_problema,$id,$valor){
     $db = abrir_banco();
     $db->query("update dado set valor = '$valor' where id_problema=$id_problema and id=$id");
@@ -164,30 +166,72 @@ function resolver($id_usuario, $detalhado){
     return $solucao;
 }
 
-function calcular_espaco_amostral_retirar($id_problema,$detalhado){
-    if($detalhado){
-        $texto= "O espaço amostral neste caso é a multiplicação do total objetos a cada retirada, logo ";
-        $dados = obterdados($id_problema);
-        $consulta = $dados[1]['valor'];
-        $total = 0;
-        while($consulta>0){
-            $total += $dados[$consulta*2+1]['valor'];
-            $texto = $texto.$dados[$consulta*2+1]['valor'];
-            if($consulta != 1){
-                $texto = $texto." + ";
-            }else{$texto = $texto." = ".$total."\n";}
-            $consulta --;
+function calcular_espaco_amostral_retirar($id_problema,$detalhado)
+{
+    $dados = obterdados($id_problema);
+    $consulta = obterdado($id_problema, 2) * 2 + 3;
+    $qretiradas = obterdado($id_problema, $consulta);
+    $independe = obterdado($id_problema, $qretiradas + $consulta + 1);
+    if (ctexto($independe, "true", 2)) {
+        if ($detalhado) {
+            $texto = "O espaço amostral neste caso é a multiplicação do total objetos a cada retirada, logo ";
+            $dados = obterdados($id_problema);
+            $consulta = $dados[1]['valor'];
+            $total = 0;
+            while ($consulta > 0) {
+                $total += $dados[$consulta * 2 + 1]['valor'];
+                $texto = $texto . $dados[$consulta * 2 + 1]['valor'];
+                if ($consulta != 1) {
+                    $texto = $texto . " + ";
+                } else {
+                    $texto = $texto . " = " . $total . "\n";
+                }
+                $consulta--;
+            }
+            $qretiradas = $dados[$dados[1]['valor'] * 2 + 2]['valor'];
+            $qretiradas--;
+            $temp = $total;
+            while ($qretiradas > 0) {
+                $total *= $temp;
+                $texto = $texto . $temp;
+                if ($qretiradas != 1) {
+                    $texto = $texto . " * ";
+                } else {
+                    $texto = $texto . " * " . $temp . " = " . $total . "\n";
+                }
+                $qretiradas--;
+            }
         }
-        $qretiradas = $dados[$dados[1]['valor']*2+2]['valor'];
-        $qretiradas --;
-        $temp = $total;
-        while($qretiradas > 0){
-            $total *= $total;
-            $texto = $texto.$temp;
-            if($qretiradas != 1){
-                $texto = $texto." * ";
-            }else{$texto = $texto." * ".$temp." = ".$total."\n";}
-            $qretiradas --;
+    } else {
+        if ($detalhado) {
+            $texto = "O espaço amostral neste caso é a multiplicação do total objetos a cada retirada, logo ";
+            $dados = obterdados($id_problema);
+            $consulta = $dados[1]['valor'];
+            $total = 0;
+            while ($consulta > 0) {
+                $total += $dados[$consulta * 2 + 1]['valor'];
+                $texto = $texto . $dados[$consulta * 2 + 1]['valor'];
+                if ($consulta != 1) {
+                    $texto = $texto . " + ";
+                } else {
+                    $texto = $texto . " = " . $total . "\n";
+                }
+                $consulta--;
+            }
+            $qretiradas = $dados[$dados[1]['valor'] * 2 + 2]['valor'];
+            $qretiradas--;
+            $temp = $total;
+            while ($qretiradas > 0) {
+                $texto = $texto . $temp;
+                $temp --;
+                $total *= $temp;
+                if ($qretiradas != 1) {
+                    $texto = $texto . " * ";
+                } else {
+                    $texto = $texto . " * " . $temp . " = " . $total . "\n";
+                }
+                $qretiradas--;
+            }
         }
     }
     return $texto;
@@ -336,7 +380,6 @@ function calcular_espaco_amostral($lancamentos, $faces, $detalhado){
     }else
         return pow($faces,$lancamentos);
 }
-
 
 function calcular_probabilidade($lancamento, $faces, $eventos, $detalhado){
     $espaco = pow($faces, $lancamento);//2^2= 4
