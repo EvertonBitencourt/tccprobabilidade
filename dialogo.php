@@ -33,8 +33,12 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 1.2){
         $categoria = verificarCategoria($mensagem,$id);
-        if($categoria == 2 || $categoria == 3){
-            $resposta = "Acesse http://approbabilidade.herokuapp.com/exerciciosprontos.html";
+        if($categoria == 2){
+            $resposta = "Acesse http://approbabilidade.herokuapp.com/exerciciosprontos.php";
+            $etapa = "a1";
+        }
+        if($categoria == 3){
+            $resposta = "http://localhost/TCC/approbabilidade/exerciciosprontos.php?texto=e";
             $etapa = "a1";
         }
     }

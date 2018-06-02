@@ -7,12 +7,10 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Album example for Bootstrap</title>
+    <title>APPROBABILIDADE: EXERCICIOS PRONTOS</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/album/">
-
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Custom styles for this template -->
     <link href="album.css" rel="stylesheet">
 </head>
@@ -46,8 +44,8 @@
 <div class="jumbotron">
     <div class="card-block">
         <h1>Exercicios resolvidos</h1>
-        <p class="card-text">Bem vindo a página de exercicios prontos do Learaar, aqui você irá visualizar exercícios prontos das categorias abaixo, clique nos botões
-            para exibir os problemas de cada categoria, após clique nos bot~eos para visualizar as soluções com um passo a passo.</p>
+        <p class="card-text text-justify">Bem vindo a página de exercicios prontos do Learaar, aqui você irá visualizar exercícios prontos das categorias abaixo, clique nos botões
+            para exibir os problemas de cada categoria, após clique nos botões para visualizar as soluções com um passo a passo.</p>
     </div>
     <br>
     <div class="col-md-12">
@@ -55,13 +53,13 @@
             <div class="card-header p-2">
                 <ul class="nav nav-pills mine">
                     <!-- <li class="nav-item"><a class="nav-link" href="#dependents" data-toggle="tab">Dependents</a></li> -->
-                    <li class="nav-item"><a class="nav-link active" href="#notes" data-toggle="tab">Probabilidade</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#deals" data-toggle="tab">Espaço Amostral</a></li>
+                    <li id="probabilidade1" class="nav-item"><a class="<?php if($_GET['texto'] != 'e')echo 'active'; echo ' nav-link' ?>" href="#prob" data-toggle="tab">Probabilidade</a></li>
+                    <li class="nav-item"><a id="teste" class="<?php if($_GET['texto'] == 'e')echo 'active'; echo ' nav-link' ?>" href="#espacoamostral" data-toggle="tab">Espaço Amostral</a></li>
                 </ul>
             </div><!-- /.card-header -->
             <div class="card-body">
                 <div class="tab-content">
-                    <div class="active tab-pane" id="notes">
+                    <div class="<?php if($_GET['texto'] != 'e')echo 'active'; echo ' tab-pane' ?>" id="prob">
                         <!-- The timeline -->
                         <div id="probabilidade" class="card-header">
                             <h2>Questão 1</h2>
@@ -91,10 +89,26 @@
                         </div>
                     </div>
                     <!-- /.tab-pane -->
-                    <div class="tab-pane" id="deals">
+                    <div class="<?php if($_GET['texto'] == 'e')echo 'active'; echo ' tab-pane' ?>" id="espacoamostral">
                         <!-- The timeline -->
                         <div id="ep" class="card-header">
-                            <p class="card-text">Teste</p>
+                            <h2>Questão 1</h2>
+                            <p class="card-text">Lance 2 dados, diga qual o espaço amostral.</p>
+                            <div class="btn btn-primary" onclick="esconder('epsolucao1')">
+                                <h6>Solução 1</h6></div>
+                            <p id="epsolucao1" class="card-text" style="display: none">Para obter o espaço amostral é levado em consideração o número de faces do objeto,
+                                portanto como estamos usando dois dados o calculo é 6 faces do 1º dado, multiplicado por 6 faces do 2º objeto, logo para obter o espaço amostral o calculo é:<br>
+                                6 * 6 = 36<br>
+                                O espaço amostral é 36.<br></p>
+                            <h2>Questão 2</h2>
+                            <p class="card-text">Qual é o espaço amostral no lançamento de 4 moedas?</p>
+                            <div class="btn btn-primary" onclick="esconder('epsolucao2')">
+                                <h6>Solução 2</h6>
+                            </div>
+                            <p id="epsolucao2" class="card-text" style="display: none">Para obter o espaço amostral é levado em consideração o número de faces do objeto,
+                                portanto como estamos usando 4 moedas o calculo é 2 faces da 1º moeda, multiplicado por 2 faces do 2º objeto, multiplicado por 2 faces do 3º objeto, multiplicado por 2 faces do 4º objeto, logo para obter o espaço amostral o calculo é:<br>
+                                2 * 2 * 2 * 2= 16<br>
+                                O espaço amostral é 16.<br></p>
                         </div>
                     </div>
                     <!-- /.tab-pane -->

@@ -47,6 +47,17 @@ function abrir_banco(){
     );
 }
 
+/*function historico($valor){
+    $db = abrir_banco();
+    $historico = $db->query("SELECT * FROM historico ORDER BY data_hora DESC;")->fetchAll(PDO::FETCH_ASSOC);
+    $conversa ="";
+    while($valor > 0){
+        $conversa = $conversa.$historico[$valor]['mensagem']."<br>";
+        $valor --;
+    }
+    return $conversa;
+}*/
+
 /*
 function consulta_msg($id, $quantidade){
     $db = abrir_banco();
