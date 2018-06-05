@@ -394,8 +394,13 @@ function calcular_probabilidade($lancamento, $faces, $eventos, $detalhado){
     $espaco = pow($faces, $lancamento);//2^2= 4
     $espaco_eventos = pow($eventos,$lancamento);
     $probabilidade = round(100/$espaco*$espaco_eventos,2)." %";
+    $texto = "A probabilidade é calculada da seguinte forma:\n";
+    // e então multiplicaremos este resultado pelo espaço amostral dos resultados aceitaveis.
+    $texto = $texto."Dividiremos uma centena pelo espaço amostral(quantidade de resultados possiveis, obtido elevando a quantidade de faces do objeto a quantidade de lançamentos) do problema (".$espaco.").\n";
+    $texto = $texto."Multiplicaremos o valor obtido pelo espaço amostral dos resultados desejados (".$espaco_eventos.").\n";
+    $texto = $texto."Sendo assim temos: 100 / ".$espaco." * ".$espaco_eventos." = ";
     if($detalhado){
-        $probabilidade = "A Probabilidade é calculada da seguinte forma(Completar a forma), portanto o resultado é:".$probabilidade;
+        $probabilidade = $texto.$probabilidade;
     }
     return $probabilidade;
 }

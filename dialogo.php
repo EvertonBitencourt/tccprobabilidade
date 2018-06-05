@@ -23,11 +23,11 @@ function dialogo($id, $mensagem){
             $etapa = "a1";
         }
         if($mensagem == 2){
-            $resposta = "Qual a categoria do seu problema?\nProbabilidade\nEspaço Amostral";
+            $resposta = "Qual a categoria do seu problema? \n Probabilidade \n Espaço Amostral";
             atualizar_etapa($id,2);
         }
         if($mensagem == 3){
-            $resposta = "Qual a categoria do seu problema?\nProbabilidade\nEspaço Amostral";
+            $resposta = "Qual a categoria do seu problema? \n Probabilidade \n Espaço Amostral";
             atualizar_etapa($id,1.2);
         }
     }
@@ -38,7 +38,7 @@ function dialogo($id, $mensagem){
             $etapa = "a1";
         }
         if($categoria == 3){
-            $resposta = "http://localhost/TCC/approbabilidade/exerciciosprontos.php";
+            $resposta = "Acesse http://approbabilidade.herokuapp.com/exerciciosprontos.php";
             $etapa = "a1";
         }
     }
