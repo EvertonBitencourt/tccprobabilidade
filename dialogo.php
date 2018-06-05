@@ -24,7 +24,7 @@ function dialogo($id, $mensagem){
             $resposta = "Consulte um dos sites da lista abaixo: \nhttps://brasilescola.uol.com.br/matematica/probabilidade.htm";
             $etapa = "a1";
         }
-        if($mensagem == 2 || ctexto(mensagem, "Resolver Problema",5)){
+        if($mensagem == 2 || ctexto($mensagem, "Resolver Problema",5)){
             $resposta = "Qual a categoria do seu problema? \n Probabilidade \n Espaço Amostral";
             atualizar_etapa($id,2);
         }
