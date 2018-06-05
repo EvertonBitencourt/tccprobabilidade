@@ -19,7 +19,7 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 1){
         if($mensagem == 1){
-            $resposta = "Consulte um dos sites da lista abaixo: \nDetalhar lista";
+            $resposta = "Consulte um dos sites da lista abaixo: \nhttps://brasilescola.uol.com.br/matematica/probabilidade.htm";
             $etapa = "a1";
         }
         if($mensagem == 2){
