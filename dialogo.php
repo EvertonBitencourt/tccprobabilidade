@@ -18,15 +18,15 @@ function dialogo($id, $mensagem){
         atualizar_etapa($id, 1);
     }
     if($etapa == 1){
-        if($mensagem == 1){
+        if($mensagem == 1 || ctexto($mensagem, "Ver material de apoio",5)){
             $resposta = "Consulte um dos sites da lista abaixo: \nhttps://brasilescola.uol.com.br/matematica/probabilidade.htm";
             $etapa = "a1";
         }
-        if($mensagem == 2){
+        if($mensagem == 2 || ctexto(mensagem, "Resolver Problema",5){
             $resposta = "Qual a categoria do seu problema? \n Probabilidade \n Espaço Amostral";
             atualizar_etapa($id,2);
         }
-        if($mensagem == 3){
+        if($mensagem == 3 || ctexto($mensagem, "Ver exercícios resolvidos",5)){
             $resposta = "Qual a categoria do seu problema? \n Probabilidade \n Espaço Amostral";
             atualizar_etapa($id,1.2);
         }
@@ -137,7 +137,7 @@ function dialogo($id, $mensagem){
                 }
                 definirdado($problema, $idado + 1, identificarobjeto($problema,$mensagem)); //passando o nome do objeto a ser retirado
                 if ($qretiradas == $idado - $consulta) {
-                    $resposta = "São eventos independentes?";
+                    $resposta = "Você irá repor o objeto a cada retirada ou não?";
                     atualizar_etapa($id, 2.96);
                 } else{
                     $resposta = "Qual próximo objeto que deseja retirar?";
@@ -176,7 +176,7 @@ function dialogo($id, $mensagem){
         if($mensagem >0){
             $problema = ultimoproblema($id);
             definirdado($problema,3,$mensagem);
-            $resposta = "Deseja obter a probabilidade de quantos resultados aceitáveis nestes eventos?";
+            $resposta = "Qual a quantidade de eventos favoráveis por lançamento?";
             atualizar_etapa($id, 3.1);
         }
     }
