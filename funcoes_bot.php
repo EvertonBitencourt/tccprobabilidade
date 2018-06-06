@@ -26,7 +26,7 @@ function processMessage($message) {
             }
             if ($caso == 2) {
                 atualizar_nome($text, $sender);
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "Você pertence a uma turma indica por algum professor de matemática?")));
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "Você pertence a uma turma indicada por algum professor de matemática?")));
                 //sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.")));
             }
             if ($caso == 3) {
@@ -43,7 +43,7 @@ function processMessage($message) {
 function verificar_palavra($mensagem,$termo){
     $sim = array('sim', 'afirmativo', 'claro', 'afirmativo', 'certo', 'ok', 'yeah');
     $nao = array('não', 'jamais', 'recuso', 'nunca', 'nops');
-    $cancelar = array('cancelar', 'parar','stop','sair','encerrar');
+    $cancelar = array('cancelar', 'parar','stop','sair','encerrar', 'tchau');
     foreach (${$termo} as $k) {
         if (ctexto($mensagem, $k, 2)) {
             return true;
@@ -113,7 +113,7 @@ function verificar_turma($texto,$idusuario){
     foreach ($turma as $value){
         if(ctexto($texto, $value["nome"], 3)){
             $turma_lev = $value["id_turma"];
-            $db->query("update usuario  set turma = $turma_lev where id_usuario = $idusuario");
+            $db->query("update usuario  set id_turma = $turma_lev where id_usuario = $idusuario");
             break;
         }
     }
