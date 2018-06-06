@@ -47,8 +47,7 @@ function verificar_palavra($mensagem,$termo){
         if (ctexto($mensagem, $k, 2)) {
             return true;
         }
-        return false;
-    }
+    }return false;
 }
 
 function abrir_banco(){
