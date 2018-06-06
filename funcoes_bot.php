@@ -43,7 +43,7 @@ function verificar_palavra($mensagem,$termo){
     $sim = array('sim', 'afirmativo', 'claro', 'afirmativo', 'certo', 'ok', 'yeah');
     $nao = array('não', 'jamais', 'recuso', 'nunca', 'nops');
     $cancelar = array('cancelar', 'parar','stop','sair','encerrar');
-    foreach ($$termo as $k) {
+    foreach (${$termo} as $k) {
         if (ctexto($mensagem, $k, 2)) {
             return true;
         }
