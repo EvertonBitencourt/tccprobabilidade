@@ -22,11 +22,11 @@ function processMessage($message) {
             $caso = verificar_usuario_bd($sender);
 
             if ($caso == 1) {
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'Olá! Eu sou o professor Learaar que vai lhe ajudar a estudar e se preparar para solucionar problemas de probabilidade! Para começar preciso saber seu nome?')));
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "Olá! Eu sou o professor Learaar que vai lhe ajudar a estudar e se preparar para solucionar problemas de probabilidade!\nPara começar preciso saber seu nome?")));
             }
             if ($caso == 2) {
                 atualizar_nome($text, $sender);
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => 'O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.')));
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.")));
             }
             if ($caso == 3) {
                 $resposta = dialogo($sender, $text);
@@ -87,7 +87,6 @@ function ctexto($mensagem, $termo, $margem){ // comparar textos
     $mensagem = strtolower($mensagem);
     $termo = strtolower($termo);
     $comp = levenshtein($mensagem,$termo);
-    $margem = $margem;
     if($comp<=$margem) {
         return true;
     }else
@@ -155,9 +154,6 @@ function resolver($id_usuario, $detalhado){
     $id_problema = ultimoproblema($id_usuario);
     $problema = $db->query("SELECT * FROM problema where id_problema = $id_problema")->fetch();
     $categoria_problema = $problema["id_categoria"];
-    if($categoria_problema == 1){
-
-    }
     if($categoria_problema == 2){
         $dado1 = obterdado($id_problema,1);
         if(ctexto($dado1,"retirar",3)){
