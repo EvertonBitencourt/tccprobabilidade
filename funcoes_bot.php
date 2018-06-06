@@ -26,7 +26,8 @@ function processMessage($message) {
             }
             if ($caso == 2) {
                 atualizar_nome($text, $sender);
-                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.")));
+                sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "Você pertence a uma turma indica por algum professor de matemática?")));
+                //sendMessage(array('recipient' => array('id' => $sender), 'message' => array('text' => "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.")));
             }
             if ($caso == 3) {
                 $resposta = dialogo($sender, $text);
@@ -103,6 +104,20 @@ function verificarCategoria($texto,$idusuario){
         }
     }
     return $cat_lev;
+}
+
+function verificar_turma($texto,$idusuario){
+    $db = abrir_banco();
+    $turma = $db->query("SELECT * FROM turma") ->fetchAll(PDO::FETCH_ASSOC);
+    $turma_lev = 0;
+    foreach ($turma as $value){
+        if(ctexto($texto, $value["nome"], 3)){
+            $turma_lev = $value["id_turma"];
+            $db->query("update usuario  set turma = $turma_lev where id_usuario = $idusuario");
+            break;
+        }
+    }
+    return $turma_lev;
 }
 
 function ultimoproblema($id_usuario){ //encontrar o último problema, para fornecer informações para o metodo resolver
@@ -427,7 +442,7 @@ function verificar_usuario_bd($id){
     $db = abrir_banco();
     $consulta = $db->query("SELECT * FROM usuario where id_usuario = $id")->fetchAll(); //fetchall retorna o resultado da query
     if (count($consulta) == 0) { //comparar o resultado para verificar se ja esta no banco
-        $db->query("INSERT INTO usuario (id_usuario,nome, etapa) VALUES($id, 'oi', 1)"); // senão sestiver no banco insere com nome padrão
+        $db->query("INSERT INTO usuario (id_usuario,nome, etapa) VALUES($id, 'oi', 0.5)"); // senão sestiver no banco insere com nome padrão
         return 1;
     }
     $consulta = $db->query("SELECT * FROM usuario where id_usuario = $id and nome = 'oi'")->fetchAll();

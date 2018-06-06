@@ -16,8 +16,27 @@ function dialogo($id, $mensagem){
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
     $etapa = $consulta_etapa[0];
     if(verificar_palavra($mensagem,"cancelar")){
-        $resposta = "Você resolveu cancelar a atividade, O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
+        $resposta = "Você resolveu cancelar a atividade, O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.";
         atualizar_etapa($id, 1);
+    }
+    if($etapa == 0.5){
+        if(verificar_palavra($mensagem,"nao")){
+            $resposta = "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.";
+            atualizar_etapa($id, 1);
+        }
+        if(verificar_palavra($mensagem,"sim")){
+            $resposta = "Qual a sua turma?";
+            atualizar_etapa($id, 0.6);
+        }
+    }
+    if($etapa == 0.6){
+        $turma = verificar_turma($mensagem,$id);
+        if($turma = 0){
+            $resposta = "Digite uma turma válida.";
+        }else{
+            $resposta = "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.";
+            atualizar_etapa($id,1);
+        }
     }
     if($etapa == 1){
         if($mensagem == 1 || ctexto($mensagem, "Ver material de apoio",5)){
