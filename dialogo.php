@@ -31,7 +31,7 @@ function dialogo($id, $mensagem){
     }
     if($etapa == 0.6){
         $turma = verificar_turma($mensagem,$id);
-        if($turma = 0){
+        if($turma == 0){
             $resposta = "Digite uma turma válida.";
         }else{
             $resposta = "O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.";
