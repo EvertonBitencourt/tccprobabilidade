@@ -15,8 +15,8 @@ function dialogo($id, $mensagem){
 
     $consulta_etapa = $db ->query("SELECT etapa from usuario where id_usuario = $id")->fetch();
     $etapa = $consulta_etapa[0];
-    if(ctexto($mensagem, "parar",2) || ctexto($mensagem,"cancelar",2) || ctexto($mensagem,"stop",2)){
-        $resposta = "Você resolveu cancelar o último problema, O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
+    if(verificar_palavra($mensagem,"cancelar")){
+        $resposta = "Você resolveu cancelar a atividade, O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
         atualizar_etapa($id, 1);
     }
     if($etapa == 1){
@@ -149,7 +149,7 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 2.96){
-        if(ctexto($mensagem,"não",2)){
+        if(verificar_palavra($mensagem,"nao")){
             $problema = ultimoproblema($id);
             $consulta = obterdado($problema,2)*2+3;
             $qretiradas =obterdado($problema,$consulta);
@@ -157,7 +157,7 @@ function dialogo($id, $mensagem){
             $resposta = "Deseja uma resposta detalhada?";
             atualizar_etapa($id,3.2);
         }
-        if(ctexto($mensagem,"sim",2)){
+        if(verificar_palavra($mensagem,"sim")){
             $problema = ultimoproblema($id);
             $consulta = obterdado($problema,2)*2+3;
             $qretiradas =obterdado($problema,$consulta);
@@ -201,11 +201,11 @@ function dialogo($id, $mensagem){
         }
     }
     if($etapa == 3.2){
-        if(ctexto($mensagem,"não",2)){
+        if(verificar_palavra($mensagem,"nao")){
             $resposta = resolver($id, false);
             $etapa = "a1";
         }
-        if(ctexto($mensagem,"sim",2)){
+        if(verificar_palavra($mensagem,"sim")){
             $resposta = resolver($id, true);
             $etapa = "a1";
         }
@@ -215,11 +215,11 @@ function dialogo($id, $mensagem){
         atualizar_etapa($id, 4);
     }
     if($etapa == 4){
-        if(ctexto($mensagem, "sim", 2)){
+        if(verificar_palavra($mensagem,"sim")){
             atualizar_etapa($id, 1);
             $resposta ="O que você deseja fazer?\n1 - Ver material de apoio.\n2 - Resolver problema\n3 - Ver Exercicio Resolvido.\nDigite o número da opção.";
         }
-        if(ctexto($mensagem, "não", 2)){
+        if(verificar_palavra($mensagem,"nao")){
             atualizar_etapa($id, 5);
             $resposta = "Ok, até logo!";
         }
