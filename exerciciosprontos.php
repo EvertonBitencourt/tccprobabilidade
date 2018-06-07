@@ -124,7 +124,7 @@
     </div>
 </div>
 
-<footer class="footer navbar navbar-inverse bg-inverse">
+<footer id="footer" class="footer navbar navbar-inverse bg-inverse">
     <div class="text-muted">
         <a class="float-right" href="#">Back to top</a>
     </div>
@@ -148,6 +148,17 @@
         else
             document.getElementById(id).style.display = 'none';
     };
+</script>
+<script>
+    $(document).ready(function() {
+
+        var docHeight = $(window).height();
+        var footerHeight = $('#footer').height();
+        var footerTop = $('#footer').position().top + footerHeight;
+        $('body').css('background-color','#eceeef');
+        if (footerTop < docHeight)
+            $('#footer').css('margin-top', 10+ (docHeight - footerTop) + 'px');
+    });
 </script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->

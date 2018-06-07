@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>APPROBABILIDADE: HISTÓRICO DE CONVERSAS</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/album/">
     <!-- Bootstrap core CSS -->
@@ -117,7 +116,7 @@
     ?>
 </div>
 
-<footer class="footer navbar navbar-inverse bg-inverse">
+<footer id = "footer" class="footer navbar navbar navbar-inverse bg-inverse">
     <div class="text-muted">
         <a class="float-right" href="#">Back to top</a>
     </div>
@@ -133,6 +132,17 @@
 <script>
     $(function () {
         Holder.addTheme("thumb", { background: "#55595c", foreground: "#eceeef", text: "Thumbnail" });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+
+        var docHeight = $(window).height();
+        var footerHeight = $('#footer').height();
+        var footerTop = $('#footer').position().top + footerHeight;
+        $('body').css('background-color','#eceeef');
+        if (footerTop < docHeight)
+            $('#footer').css('margin-top', 10+ (docHeight - footerTop) + 'px');
     });
 </script>
 <script src="bootstrap/js/bootstrap.min.js"></script>

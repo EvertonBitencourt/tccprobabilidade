@@ -111,6 +111,11 @@ function recuperar_turmas(){
     return $turma;
 }
 
+function inserir_turma($turmanova){
+    $db = abrir_banco();
+    $db->query("insert into turma (nome) values ('$turmanova')");
+}
+
 function recuperar_alunos($id){
     $db = abrir_banco();
     $aluno = $db->query("SELECT * FROM usuario where id_turma=$id order by nome") ->fetchAll(PDO::FETCH_ASSOC);
