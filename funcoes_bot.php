@@ -70,18 +70,17 @@ function abrir_banco(){
     return $conversa;
 }*/
 
-/*
 function consulta_msg($id, $quantidade){
     $db = abrir_banco();
     $msg = $db->query("SELECT * FROM historico WHERE id_origem = $id OR id_destino = $id ORDER BY data_hora DESC;")->fetchAll(PDO::FETCH_ASSOC);
-    $usuario = $db->query("SELECT nome FROM usuario WHERE id_usuario = $id")->fetchAll(PDO::FETCH_ASSOC);
-    $usuario = "everton";
-    $retorno = "";
-    foreach($msg as $line){
+    $usuario = $db->query("SELECT nome FROM usuario WHERE id_usuario = $id")->fetchAll(PDO::FETCH_ASSOC)[0]['nome'];
+    /*$usuario = "everton";*/
+    $retorno = array($msg,$usuario);
+    /*foreach($msg as $line){
         $retorno = $retorno.$line["data_hora"]." - ".$usuario.": ".$line["mensagem"]."\n";
-    }
-    return $retorno;
-}*/
+    }*/
+    return $retorno; //[0]mostra todas as mensagens, [1]nome do usuario
+}
 
 function ctexto($mensagem, $termo, $margem){ // comparar textos
     $mensagem = strtolower($mensagem);
@@ -104,6 +103,18 @@ function verificarCategoria($texto,$idusuario){
         }
     }
     return $cat_lev;
+}
+
+function recuperar_turmas(){
+    $db = abrir_banco();
+    $turma = $db->query("SELECT * FROM turma order by nome") ->fetchAll(PDO::FETCH_ASSOC);
+    return $turma;
+}
+
+function recuperar_alunos($id){
+    $db = abrir_banco();
+    $aluno = $db->query("SELECT * FROM usuario where id_turma=$id order by nome") ->fetchAll(PDO::FETCH_ASSOC);
+    return $aluno;
 }
 
 function verificar_turma($texto,$idusuario){

@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
 
-    <title>APPROBABILIDADE: EXERCICIOS PRONTOS</title>
+    <title>APPROBABILIDADE: HISTÓRICO DE CONVERSAS</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/album/">
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="album.css" rel="stylesheet">
+    <?php
+        require 'funcoes_bot.php';
+    ?>
 </head>
 
 <body>
@@ -53,7 +53,6 @@
             <select name="turma" id="selectTurma" class="form-control" form="verturma">
                 <option value="null"></option>
                 <?php
-                    require 'funcoes_bot.php';
                     $turmas = recuperar_turmas();
                     foreach($turmas as $turma){
                         echo '<option ';
